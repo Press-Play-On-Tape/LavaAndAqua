@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 3,
+  "binaries": [
+    {
+      "title": "Scoundrel",
+      "filename": "Scoundrel-Mini.hex",
+      "flashdata": "Scoundrel-Mini-data.bin",
+      "flashsave": "Scoundrel-Mini-save.bin",
+      "device": "ArduboyMini"
+    }
+  ]
+}
