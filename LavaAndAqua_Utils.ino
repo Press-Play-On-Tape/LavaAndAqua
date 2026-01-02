@@ -599,7 +599,8 @@ void cookieReset() {
 
     for (uint8_t i = 0; i < 40; i++) {
 
-        if (i == 0) {
+        // if (i == 0) {
+        if (i < 22) { //SJH
             game.getPuzzle(i).setStatus(PuzzleStatus::InProgress);
             game.getPuzzle(i).setNumberOfMoves(0);
         }

@@ -124,7 +124,7 @@ namespace Images
   constexpr uint24_t Level_Img_21 = 0x0252B9;
   constexpr uint24_t Level_Img_22 = 0x02633B;
   constexpr uint24_t Level_Img_23 = 0x0273BD;
-  constexpr uint24_t Levels = 0x02843F;
+  constexpr uint24_t Level_Images = 0x02843F;
   constexpr uint24_t Lavas = 0x028487;
   constexpr uint24_t Waters = 0x02849F;
 }

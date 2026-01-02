@@ -9,7 +9,7 @@ namespace Images
 
     include "images/Images.hpp"
 
-    uint24_t Levels[] = {
+    uint24_t Level_Images[] = {
         Level_Img_00,
         Level_Img_01,
         Level_Img_02,

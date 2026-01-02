@@ -17,8 +17,10 @@ struct Game {
         uint8_t level = 0;
         uint8_t portalKeyCount = 0;
         uint8_t world_Y_Offset = 0;
-        uint16_t randomSeed = 0;
         uint16_t frameCount = 0;
+        uint16_t moveCount = 0;
+        uint8_t undoCount = 0;
+
         Player player;
         Portal portal;
 
@@ -34,6 +36,8 @@ struct Game {
         uint8_t getWorld_Y_Offset()                     { return this->world_Y_Offset; }
         uint8_t getLevel()                              { return this->level; }
         uint8_t getPortalKeyCount()                     { return this->portalKeyCount; }
+        uint8_t getUndoCount()                          { return this->undoCount; }
+        uint16_t getMoveCount()                         { return this->moveCount; }
 
         Player &getPlayer()                             { return this->player; }
         Portal &getPortal()                             { return this->portal; }
@@ -42,7 +46,6 @@ struct Game {
         GreenDoor &getGreenDoor(uint8_t idx)            { return this->greenDoors[idx]; }
         Puzzle &getPuzzle(uint8_t level)                { return this->puzzles[level]; }
 
-        void setRandomSeed(uint16_t val)                { this->randomSeed = val; }
         void setFrameCount(uint16_t val)                { this->frameCount = val; }
         void setWorld_Y_Offset(uint8_t val)             { this->world_Y_Offset = val; }
         void setLevel(uint8_t val)                      { this->level = val; }
@@ -81,6 +84,40 @@ struct Game {
 
             this->frameCount = 0;
             
+        }
+
+        void captureMove() {
+
+            // this->player.captureMove();
+
+            // for (uint8_t i = 0; i < Constants::Block_Count; i++) {
+            
+            //     Block &block = this->blocks[i];
+            //     block.captureMove();
+
+            // }
+
+            // this->moveCount++;
+            // if (this->undoCount < Constants::Undo_Count) this->undoCount++;
+
+        }
+
+        void revertMove() {
+
+            // if (this->undoCount == 0) return;
+
+            // this->moveCount--;
+            // this->player.revertMove();
+
+            // for (uint8_t i = 0; i < Constants::Block_Count; i++) {
+            
+            //     Block &block = this->blocks[i];
+            //     block.revertMove();
+
+            // }
+
+            // this->undoCount--;
+
         }
 
 };

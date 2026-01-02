@@ -190,7 +190,7 @@ void title(ArduboyGBase_Config<ABG_Mode::L4_Triplane> &a) {
 
         case GameState::Title_Select:
 
-            if (titleCounter < 40) {
+            // if (titleCounter < 40) {
 
                 // SpritesU::drawOverwriteFX(0, 0, Images::Background_128x64, currentPlane);
 
@@ -215,8 +215,8 @@ void title(ArduboyGBase_Config<ABG_Mode::L4_Triplane> &a) {
                 //     SpritesU::drawPlusMaskFX(36, 43, Images::Title_Key, currentPlane);
                 // }
 
-            }
-            else {                
+            // }
+            // else {                
 
                 for (uint8_t y = 0; y < 8; y++) {
 
@@ -265,7 +265,7 @@ void title(ArduboyGBase_Config<ABG_Mode::L4_Triplane> &a) {
 
                 }
 
-            }
+            // }
 
             break;
 

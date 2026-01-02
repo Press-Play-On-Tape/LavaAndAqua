@@ -20,6 +20,10 @@ namespace Constants {
     
     constexpr uint8_t levelSelect_Offset[] = { 0, 2, 6, 21, 36, 42, 54, 55};
 
+    constexpr uint8_t XOffset_Pixels = 6;
+    constexpr uint8_t YOffset_Pixels = 6;
+    constexpr uint8_t Undo_Count = 3;
+
     constexpr uint8_t Map_X_Count = 16;
     constexpr uint8_t Map_Y_Count = 11;
     constexpr uint8_t Level_Count = 24;

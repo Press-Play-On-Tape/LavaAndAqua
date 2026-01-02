@@ -9,17 +9,6 @@ void play_Init() {
     game.resetFrameCount();
     gameState = GameState::Play_Shuffle;
 
-    // #ifdef DEBUG_RAND
-    a.initRandomSeed();
-    uint16_t r = random(8000);
-    // r = 5362;
-    // DEBUG_PRINT("Rand ");
-    // DEBUG_PRINTLN(r);
-    randomSeed(r);
-    game.setRandomSeed(r);
-    // #endif
-
-    // game.setLevel(23);
     loadMap(game.getLevel());
 
 }
@@ -79,8 +68,28 @@ void play_Update() {
     if (game.getPlayer().getX() == game.getPortal().getX() && game.getPlayer().getY() == game.getPortal().getY()) {
     
         Serial.println("Level Complete");
+       
+        game.getPuzzle(game.getLevel()).setStatus(PuzzleStatus::Complete);
+        game.getPuzzle(game.getLevel()).setNumberOfMoves(game.getMoveCount());
+        
+        if (game.getLevel() < Constants::Level_Count - 1 && game.getPuzzle(game.getLevel() + 1).getStatus() == PuzzleStatus::Locked) {
+
+            game.getPuzzle(game.getLevel() + 1).setStatus(PuzzleStatus::InProgress);
+            game.setLevel(game.getLevel() + 1);
+            gameState = GameState::Play_Init;
+            levelSelect.increaseGame();
+
+        }
+        else {
+
+            gameState = GameState::Title_Select;
+
+        }
+
+        saveCookie();
 
     }
+
 
     // ---------------------------------------------------------------------
     // Have we lost?
@@ -125,44 +134,44 @@ void play(ArduboyGBase_Config<ABG_Mode::L4_Triplane> &a) {
     uint8_t currentPlane = a.currentPlane();
     if (a.needsUpdate()) play_Update();
 
-    uint24_t levelIdx = FX::readIndexedUInt24(Images::Levels_Select, game.getLevel());
-    SpritesU::drawOverwriteFX(0, -game.getWorld_Y_Offset() * 8, levelIdx, currentPlane);
+    uint24_t levelIdx = FX::readIndexedUInt24(Images::Level_Images, game.getLevel());
+    SpritesU::drawOverwriteFX(-Constants::XOffset_Pixels, -Constants::YOffset_Pixels - game.getWorld_Y_Offset() * 8, levelIdx, currentPlane);
 
 
     for (uint16_t y = game.getWorld_Y_Offset(); y < Constants::Map_Y_Count; y++) {
 
-        if ((y - game.getWorld_Y_Offset()) * 8 > 63) continue;
+        if (((y - game.getWorld_Y_Offset()) * 8) - Constants::YOffset_Pixels > 63) continue;
 
         for (uint16_t x = 0; x < Constants::Map_X_Count; x++) {
 
             if (mapData[y][x] >= Constants::Tile_Counter_00 && mapData[y][x] <= Constants::Tile_Counter_65) {
 
-                SpritesU::drawOverwriteFX(x * 8, (y - game.getWorld_Y_Offset()) * 8, Images::Numbers_5x3_2D_WB, ((mapData[y][x] - Constants::Tile_Counter_00) * 3) + currentPlane);
+                SpritesU::drawOverwriteFX((x * 8) - Constants::XOffset_Pixels, ((y - game.getWorld_Y_Offset()) * 8) - Constants::YOffset_Pixels, Images::Numbers_5x3_2D_WB, ((mapData[y][x] - Constants::Tile_Counter_00) * 3) + currentPlane);
 
             }
             else if (mapData[y][x] == Constants::Tile_Waters_Edge) {
 
-                SpritesU::drawPlusMaskFX(x * 8, (y - game.getWorld_Y_Offset()) * 8, Images::Tiles, (Constants::Image_Waters_Edge * 3) + currentPlane);
+                SpritesU::drawPlusMaskFX((x * 8) - Constants::XOffset_Pixels, ((y - game.getWorld_Y_Offset()) * 8) - Constants::YOffset_Pixels, Images::Tiles, (Constants::Image_Waters_Edge * 3) + currentPlane);
 
             }
             else if (mapData[y][x] == Constants::Tile_Green_Switch) {
 
-                SpritesU::drawPlusMaskFX(x * 8, (y - game.getWorld_Y_Offset()) * 8, Images::Tiles, (Constants::Image_Green_Switch * 3) + currentPlane);
+                SpritesU::drawPlusMaskFX((x * 8) - Constants::XOffset_Pixels, ((y - game.getWorld_Y_Offset()) * 8) - Constants::YOffset_Pixels, Images::Tiles, (Constants::Image_Green_Switch * 3) + currentPlane);
 
             }
             else if (mapData[y][x] == Constants::Tile_Partial_Wall) {
 
-                SpritesU::drawPlusMaskFX(x * 8, (y - game.getWorld_Y_Offset()) * 8, Images::Tiles, (Constants::Image_Partial_Wall * 3) + currentPlane);
+                SpritesU::drawPlusMaskFX((x * 8) - Constants::XOffset_Pixels, ((y - game.getWorld_Y_Offset()) * 8) - Constants::YOffset_Pixels, Images::Tiles, (Constants::Image_Partial_Wall * 3) + currentPlane);
 
             }
             else if (mapData[y][x] == Constants::Tile_Lava_And_Partial_Wall) {
 
-                SpritesU::drawPlusMaskFX(x * 8, (y - game.getWorld_Y_Offset()) * 8, Images::Tiles, ((Constants::Image_Lava_And_Partial_Wall + ((game.getFrameCount() % 32) / 8)) * 3) + currentPlane);
+                SpritesU::drawPlusMaskFX((x * 8) - Constants::XOffset_Pixels, ((y - game.getWorld_Y_Offset()) * 8) - Constants::YOffset_Pixels, Images::Tiles, ((Constants::Image_Lava_And_Partial_Wall + ((game.getFrameCount() % 32) / 8)) * 3) + currentPlane);
 
             }
             else if (mapData[y][x] == Constants::Tile_Water_And_Partial_Wall) {
 
-                SpritesU::drawPlusMaskFX(x * 8, (y - game.getWorld_Y_Offset()) * 8, Images::Tiles, ((Constants::Image_Water_And_Partial_Wall + ((game.getFrameCount() % 32) / 8)) * 3) + currentPlane);
+                SpritesU::drawPlusMaskFX((x * 8) - Constants::XOffset_Pixels, ((y - game.getWorld_Y_Offset()) * 8) - Constants::YOffset_Pixels, Images::Tiles, ((Constants::Image_Water_And_Partial_Wall + ((game.getFrameCount() % 32) / 8)) * 3) + currentPlane);
 
             }
             else if (mapData[y][x] == Constants::Tile_Lava) {
@@ -182,7 +191,7 @@ void play(ArduboyGBase_Config<ABG_Mode::L4_Triplane> &a) {
                 }
 
                 uint24_t imgIdx = FX::readIndexedUInt24(Images::Lavas, len - 1);
-                SpritesU::drawOverwriteFX(x * 8, (y - game.getWorld_Y_Offset()) * 8, imgIdx, (((game.getFrameCount() % 32) / 8) * 3) + currentPlane);
+                SpritesU::drawOverwriteFX((x * 8) - Constants::XOffset_Pixels, ((y - game.getWorld_Y_Offset()) * 8) - Constants::YOffset_Pixels, imgIdx, (((game.getFrameCount() % 32) / 8) * 3) + currentPlane);
 
                 x = x + len - 1;
 
@@ -205,7 +214,7 @@ void play(ArduboyGBase_Config<ABG_Mode::L4_Triplane> &a) {
                 }
 
                 uint24_t imgIdx = FX::readIndexedUInt24(Images::Waters, len - 1);
-                SpritesU::drawOverwriteFX(x * 8, (y - game.getWorld_Y_Offset()) * 8, imgIdx, (((game.getFrameCount() % 32) / 8) * 3) + currentPlane);
+                SpritesU::drawOverwriteFX((x * 8) - Constants::XOffset_Pixels, ((y - game.getWorld_Y_Offset()) * 8) - Constants::YOffset_Pixels, imgIdx, (((game.getFrameCount() % 32) / 8) * 3) + currentPlane);
 
                 x = x + len - 1;
 
@@ -213,7 +222,7 @@ void play(ArduboyGBase_Config<ABG_Mode::L4_Triplane> &a) {
 
             if (mapData[y][x] == Constants::Tile_Basalt) {
 
-                SpritesU::drawPlusMaskFX(x * 8, (y - game.getWorld_Y_Offset()) * 8, Images::Tiles, (Constants::Image_Basalt * 3) + currentPlane);
+                SpritesU::drawPlusMaskFX((x * 8) - Constants::XOffset_Pixels, ((y - game.getWorld_Y_Offset()) * 8) - Constants::YOffset_Pixels, Images::Tiles, (Constants::Image_Basalt * 3) + currentPlane);
 
             }
         
@@ -229,7 +238,7 @@ void play(ArduboyGBase_Config<ABG_Mode::L4_Triplane> &a) {
         Block &block = game.getBlock(i);
 
         if (block.isActive()) {
-            SpritesU::drawPlusMaskFX(block.getX() * 8, (block.getY() - game.getWorld_Y_Offset()) * 8, Images::Tiles, (Constants::Image_Block * 3) + currentPlane);
+            SpritesU::drawPlusMaskFX((block.getX() * 8) - Constants::XOffset_Pixels, ((block.getY() - game.getWorld_Y_Offset()) * 8) - Constants::YOffset_Pixels, Images::Tiles, (Constants::Image_Block * 3) + currentPlane);
         }
         else {
             break;
@@ -245,7 +254,7 @@ void play(ArduboyGBase_Config<ABG_Mode::L4_Triplane> &a) {
         PortalKey &key = game.getPortalKey(i);
 
         if (key.isActive()) {
-            SpritesU::drawPlusMaskFX(key.getX() * 8, (key.getY() - game.getWorld_Y_Offset()) * 8, Images::Tiles, ((5 + ((game.getFrameCount() % 36) / 12)) * 3) + currentPlane);
+            SpritesU::drawPlusMaskFX((key.getX() * 8) - Constants::XOffset_Pixels, ((key.getY() - game.getWorld_Y_Offset()) * 8) - Constants::YOffset_Pixels, Images::Tiles, ((5 + ((game.getFrameCount() % 36) / 12)) * 3) + currentPlane);
         }
 
     }
@@ -263,10 +272,10 @@ void play(ArduboyGBase_Config<ABG_Mode::L4_Triplane> &a) {
             if (greenDoor.isActive()) {
 
                 if (greenDoor.isOpen()) {
-                    SpritesU::drawPlusMaskFX(greenDoor.getX() * 8, (greenDoor.getY() - game.getWorld_Y_Offset()) * 8, Images::Tiles, (Constants::Image_Green_Open * 3) + currentPlane);
+                    SpritesU::drawPlusMaskFX((greenDoor.getX() * 8) - Constants::XOffset_Pixels, ((greenDoor.getY() - game.getWorld_Y_Offset()) * 8) - Constants::YOffset_Pixels, Images::Tiles, (Constants::Image_Green_Open * 3) + currentPlane);
                 }
                 else {
-                    SpritesU::drawPlusMaskFX(greenDoor.getX() * 8, (greenDoor.getY() - game.getWorld_Y_Offset()) * 8, Images::Tiles, (Constants::Image_Green_Closed * 3) + currentPlane);
+                    SpritesU::drawPlusMaskFX((greenDoor.getX() * 8) - Constants::XOffset_Pixels, ((greenDoor.getY() - game.getWorld_Y_Offset()) * 8) - Constants::YOffset_Pixels, Images::Tiles, (Constants::Image_Green_Closed * 3) + currentPlane);
                 }
 
             }
@@ -282,17 +291,17 @@ void play(ArduboyGBase_Config<ABG_Mode::L4_Triplane> &a) {
         // Serial.print("> ");
         // Serial.print((game.getFrameCount() % 32) / 8);
         // Serial.println("");
-        SpritesU::drawPlusMaskFX(game.getPortal().getX() * 8, (game.getPortal().getY() - game.getWorld_Y_Offset()) * 8, Images::Tiles, ((Constants::Image_Portal + ((game.getFrameCount() % 40) / 8)) * 3) + currentPlane);
+        SpritesU::drawPlusMaskFX((game.getPortal().getX() * 8) - Constants::XOffset_Pixels, ((game.getPortal().getY() - game.getWorld_Y_Offset()) * 8) - Constants::YOffset_Pixels, Images::Tiles, ((Constants::Image_Portal + ((game.getFrameCount() % 40) / 8)) * 3) + currentPlane);
     }
     else {
     // Serial.println("sdas");
-        SpritesU::drawPlusMaskFX(game.getPortal().getX() * 8, (game.getPortal().getY() - game.getWorld_Y_Offset()) * 8, Images::Tiles, (Constants::Image_Portal_Inactive * 3) + currentPlane);
+        SpritesU::drawPlusMaskFX((game.getPortal().getX() * 8) - Constants::XOffset_Pixels, ((game.getPortal().getY() - game.getWorld_Y_Offset()) * 8) - Constants::YOffset_Pixels, Images::Tiles, (Constants::Image_Portal_Inactive * 3) + currentPlane);
     }
 
 
     // Player ..
 
-    SpritesU::drawPlusMaskFX(game.getPlayer().getX() * 8, (game.getPlayer().getY() - game.getWorld_Y_Offset()) * 8, Images::Tiles, (Constants::Image_Player * 3) + currentPlane);
+    SpritesU::drawPlusMaskFX((game.getPlayer().getX() * 8) - Constants::XOffset_Pixels, ((game.getPlayer().getY() - game.getWorld_Y_Offset()) * 8) - Constants::YOffset_Pixels, Images::Tiles, (Constants::Image_Player * 3) + currentPlane);
 
 
 }
