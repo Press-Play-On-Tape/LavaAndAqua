@@ -9,6 +9,9 @@ void play_Init() {
     gameState = GameState::Play_Shuffle;
 
     loadMap(game.getLevel());
+    menuSelect = 0;
+    menuX = 128;
+    menuDirection = Direction::None;
 
 }
 
@@ -23,48 +26,130 @@ void play_Update() {
 
     game.incFrameCount();
 
-    if (pressed & B_BUTTON && justPressed & DOWN_BUTTON && game.getWorld_Y_Offset() < 3) {
-       game.setWorld_Y_Offset(game.getWorld_Y_Offset() + 1);
+    if (menuX == 128) {
+        
+        if (pressed & B_BUTTON && justPressed & DOWN_BUTTON && game.getWorld_Y_Offset() < 3) {
+            game.setWorld_Y_Offset(game.getWorld_Y_Offset() + 1);
+        }
+
+        else if (pressed & B_BUTTON && justPressed & UP_BUTTON && game.getWorld_Y_Offset() > 0) {
+            game.setWorld_Y_Offset(game.getWorld_Y_Offset() - 1);
+        }
+
+        else if (justPressed & LEFT_BUTTON && isWalkable(ObjectType::Player, -1, 0)) {
+            game.captureMove();
+            game.getPlayer().decX();
+            updateGreenDoors();
+            incLavaAndWater();
+        }
+
+        else if (justPressed & RIGHT_BUTTON && isWalkable(ObjectType::Player, 1, 0)) {
+            game.captureMove();
+            game.getPlayer().incX();
+            updateGreenDoors();
+            incLavaAndWater();
+        }
+
+        else if (justPressed & UP_BUTTON && isWalkable(ObjectType::Player, 0, -1)) {
+            game.captureMove();
+            game.getPlayer().decY();
+            updateGreenDoors();
+            incLavaAndWater();
+            fix_World_Y_Offset();
+
+        }
+
+        else if (justPressed & DOWN_BUTTON && isWalkable(ObjectType::Player, 0, 1)) {
+            game.captureMove();
+            game.getPlayer().incY();
+            updateGreenDoors();
+            incLavaAndWater();
+            fix_World_Y_Offset();
+
+        }
+
+
+    }
+    else {
+
+        if (justPressed & UP_BUTTON) {
+
+            if (menuSelect > game.getUndoCount() == 0 ? 2 : 1) {
+                menuSelect--;    
+            }
+
+        }
+
+        else if (justPressed & DOWN_BUTTON) {
+
+            if (menuSelect < 2) {
+                menuSelect++;    
+            }
+
+        }
+
+        else if (justPressed & A_BUTTON) {
+
+            switch (menuSelect) {
+            
+                case 0:
+                    game.revertMove();
+                    if (game.getUndoCount() == 0) {
+                        menuDirection = Direction::Right;
+                    }
+                    break;
+            
+                case 1:
+                    gameState = GameState::Play_Init;
+                    break;
+            
+                case 2:
+                    gameState = GameState::Title_Init;
+                    break;
+                    
+            }
+
+        }
+
     }
 
-    else if (pressed & B_BUTTON && justPressed & UP_BUTTON && game.getWorld_Y_Offset() > 0) {
-       game.setWorld_Y_Offset(game.getWorld_Y_Offset() - 1);
-    }
-
-    else if (justPressed & LEFT_BUTTON && isWalkable(ObjectType::Player, -1, 0)) {
-        game.captureMove();
-        game.getPlayer().decX();
-        updateGreenDoors();
-        incLavaAndWater();
-    }
-
-    else if (justPressed & RIGHT_BUTTON && isWalkable(ObjectType::Player, 1, 0)) {
-        game.captureMove();
-        game.getPlayer().incX();
-        updateGreenDoors();
-        incLavaAndWater();
-    }
-
-    else if (justPressed & UP_BUTTON && isWalkable(ObjectType::Player, 0, -1)) {
-        game.captureMove();
-        game.getPlayer().decY();
-        updateGreenDoors();
-        incLavaAndWater();
-        fix_World_Y_Offset();
-
-    }
-
-    else if (justPressed & DOWN_BUTTON && isWalkable(ObjectType::Player, 0, 1)) {
-        game.captureMove();
-        game.getPlayer().incY();
-        updateGreenDoors();
-        incLavaAndWater();
-        fix_World_Y_Offset();
-
-    }
+        
+    // Menu ..
 
     if (justPressed & B_BUTTON) {
-        game.revertMove();
+                
+        if (menuX == 128) {
+            menuDirection = Direction::Left;
+            menuSelect = game.getUndoCount() == 0 ? 1 : 0; 
+        }
+        else if (menuX == 128 - 32) {
+            menuDirection = Direction::Right;
+        }
+        
+    }
+
+    switch (menuDirection) {
+    
+        case Direction::Left:
+
+            menuX = menuX - 2;
+
+            if (menuX == 128 - 32) {
+                menuDirection = Direction::None;
+            }
+
+            break;
+    
+        case Direction::Right:
+
+            menuX = menuX + 2;
+
+            if (menuX == 128) {
+                menuDirection = Direction::None;
+            }
+
+            break;
+        
     }
 
 
@@ -150,38 +235,44 @@ void play(ArduboyGBase_Config<ABG_Mode::L4_Triplane> &a) {
 
     for (uint8_t y = game.getWorld_Y_Offset(); y < Constants::Map_Y_Count; y++) {
 
-        if (((y - game.getWorld_Y_Offset()) * 8) - Constants::YOffset_Pixels > 63) continue;
+        int8_t yPos = ((y - game.getWorld_Y_Offset()) * 8) - Constants::YOffset_Pixels;
+
+        if (yPos > 63) continue;
 
         for (uint8_t x = 0; x < Constants::Map_X_Count; x++) {
 
+            int8_t xPos = (x * 8) - Constants::XOffset_Pixels;
+
+            if (xPos + 8 > menuX) continue;
+
             if (game.mapData[y][x] >= Constants::Tile_Counter_00 && game.mapData[y][x] <= Constants::Tile_Counter_65) {
 
-                SpritesU::drawOverwriteFX((x * 8) - Constants::XOffset_Pixels, ((y - game.getWorld_Y_Offset()) * 8) - Constants::YOffset_Pixels, Images::Numbers_5x3_2D_WB, ((game.mapData[y][x] - Constants::Tile_Counter_00) * 3) + currentPlane);
+                SpritesU::drawOverwriteFX(xPos, yPos, Images::Numbers_5x3_2D_WB, ((game.mapData[y][x] - Constants::Tile_Counter_00) * 3) + currentPlane);
 
             }
             else if (game.mapData[y][x] == Constants::Tile_Waters_Edge) {
 
-                SpritesU::drawPlusMaskFX((x * 8) - Constants::XOffset_Pixels, ((y - game.getWorld_Y_Offset()) * 8) - Constants::YOffset_Pixels, Images::Tiles, (Constants::Image_Waters_Edge * 3) + currentPlane);
+                SpritesU::drawPlusMaskFX(xPos, yPos, Images::Tiles, (Constants::Image_Waters_Edge * 3) + currentPlane);
 
             }
             else if (game.mapData[y][x] == Constants::Tile_Green_Switch) {
 
-                SpritesU::drawPlusMaskFX((x * 8) - Constants::XOffset_Pixels, ((y - game.getWorld_Y_Offset()) * 8) - Constants::YOffset_Pixels, Images::Tiles, (Constants::Image_Green_Switch * 3) + currentPlane);
+                SpritesU::drawPlusMaskFX(xPos, yPos, Images::Tiles, (Constants::Image_Green_Switch * 3) + currentPlane);
 
             }
             else if (game.mapData[y][x] == Constants::Tile_Partial_Wall) {
 
-                SpritesU::drawPlusMaskFX((x * 8) - Constants::XOffset_Pixels, ((y - game.getWorld_Y_Offset()) * 8) - Constants::YOffset_Pixels, Images::Tiles, (Constants::Image_Partial_Wall * 3) + currentPlane);
+                SpritesU::drawPlusMaskFX(xPos, yPos, Images::Tiles, (Constants::Image_Partial_Wall * 3) + currentPlane);
 
             }
             else if (game.mapData[y][x] == Constants::Tile_Lava_And_Partial_Wall) {
 
-                SpritesU::drawPlusMaskFX((x * 8) - Constants::XOffset_Pixels, ((y - game.getWorld_Y_Offset()) * 8) - Constants::YOffset_Pixels, Images::Tiles, ((Constants::Image_Lava_And_Partial_Wall + ((game.getFrameCount() % 32) / 8)) * 3) + currentPlane);
+                SpritesU::drawPlusMaskFX(xPos, yPos, Images::Tiles, ((Constants::Image_Lava_And_Partial_Wall + ((game.getFrameCount() % 32) / 8)) * 3) + currentPlane);
 
             }
             else if (game.mapData[y][x] == Constants::Tile_Water_And_Partial_Wall) {
 
-                SpritesU::drawPlusMaskFX((x * 8) - Constants::XOffset_Pixels, ((y - game.getWorld_Y_Offset()) * 8) - Constants::YOffset_Pixels, Images::Tiles, ((Constants::Image_Water_And_Partial_Wall + ((game.getFrameCount() % 32) / 8)) * 3) + currentPlane);
+                SpritesU::drawPlusMaskFX(xPos, yPos, Images::Tiles, ((Constants::Image_Water_And_Partial_Wall + ((game.getFrameCount() % 32) / 8)) * 3) + currentPlane);
 
             }
             else if (game.mapData[y][x] == Constants::Tile_Lava) {
@@ -201,7 +292,7 @@ void play(ArduboyGBase_Config<ABG_Mode::L4_Triplane> &a) {
                 }
 
                 uint24_t imgIdx = FX::readIndexedUInt24(Images::Lavas, len - 1);
-                SpritesU::drawOverwriteFX((x * 8) - Constants::XOffset_Pixels, ((y - game.getWorld_Y_Offset()) * 8) - Constants::YOffset_Pixels, imgIdx, (((game.getFrameCount() % 32) / 8) * 3) + currentPlane);
+                SpritesU::drawOverwriteFX(xPos, yPos, imgIdx, (((game.getFrameCount() % 32) / 8) * 3) + currentPlane);
 
                 x = x + len - 1;
 
@@ -224,7 +315,7 @@ void play(ArduboyGBase_Config<ABG_Mode::L4_Triplane> &a) {
                 }
 
                 uint24_t imgIdx = FX::readIndexedUInt24(Images::Waters, len - 1);
-                SpritesU::drawOverwriteFX((x * 8) - Constants::XOffset_Pixels, ((y - game.getWorld_Y_Offset()) * 8) - Constants::YOffset_Pixels, imgIdx, (((game.getFrameCount() % 32) / 8) * 3) + currentPlane);
+                SpritesU::drawOverwriteFX(xPos, yPos, imgIdx, (((game.getFrameCount() % 32) / 8) * 3) + currentPlane);
 
                 x = x + len - 1;
 
@@ -232,7 +323,7 @@ void play(ArduboyGBase_Config<ABG_Mode::L4_Triplane> &a) {
 
             if (game.mapData[y][x] == Constants::Tile_Basalt) {
 
-                SpritesU::drawPlusMaskFX((x * 8) - Constants::XOffset_Pixels, ((y - game.getWorld_Y_Offset()) * 8) - Constants::YOffset_Pixels, Images::Tiles, (Constants::Image_Basalt * 3) + currentPlane);
+                SpritesU::drawPlusMaskFX(xPos, yPos, Images::Tiles, (Constants::Image_Basalt * 3) + currentPlane);
 
             }
         
@@ -311,6 +402,11 @@ void play(ArduboyGBase_Config<ABG_Mode::L4_Triplane> &a) {
     // Player ..
 
     SpritesU::drawPlusMaskFX((game.getPlayer().getX() * 8) - Constants::XOffset_Pixels, ((game.getPlayer().getY() - game.getWorld_Y_Offset()) * 8) - Constants::YOffset_Pixels, Images::Tiles, (Constants::Image_Player * 3) + currentPlane);
+
+
+    if (menuX < 128) {
+        SpritesU::drawOverwriteFX(menuX, 0, Images::Menu, ((menuSelect + (game.getUndoCount() == 0 ? 2 : 0)) * 3) + currentPlane);
+    }
 
 
 }

@@ -34,9 +34,10 @@ GameState gameState = GameState::SplashScreen_Start;
 GameState prevGameState = GameState::SplashScreen_Start;
 
 uint8_t titleCounter = 0;
-// uint8_t numberOfMoves = 0;
 LevelSelect levelSelect;
-
+uint8_t menuX = 128;
+uint8_t menuSelect = 0;
+Direction menuDirection = Direction::None;
 
 void setup() {
 

@@ -86,3 +86,9 @@ inline GameState operator--(GameState &c, int) {
     --c;
     return result;
 }
+
+enum Direction : uint8_t { 
+    None,
+    Left,
+    Right,
+};
