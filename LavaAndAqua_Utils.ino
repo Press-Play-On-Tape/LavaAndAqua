@@ -61,41 +61,42 @@ void loadMap(uint8_t level) {
 
             for (uint8_t x = 0; x < Constants::Map_X_Count; x++) {
                     
-                if (mapData[y][x] == Constants::Tile_Border) {
+                // if (mapData[y][x] == Constants::Tile_Border) {
                 
-                    // mapData[y][x] = Constants::Tile_Border;
+                //     // mapData[y][x] = Constants::Tile_Border;
 
-                }
-                else if (mapData[y][x] == Constants::Tile_Green_Switch) {
-                    // mapData[y][x] = Constants::Tile_Lava;
+                // }
+                // else if (mapData[y][x] == Constants::Tile_Green_Switch) {
+                //     // mapData[y][x] = Constants::Tile_Lava;
 
-                }
-                else if (mapData[y][x] == Constants::Tile_Green_Closed) {
+                // }
+                // else if (mapData[y][x] == Constants::Tile_Waters_Edge) {
+                //     // mapData[y][x] = Constants::Tile_Lava;
+
+                // }
+                // else if (mapData[y][x] == Constants::Tile_Lava) {
+                
+                //     // mapData[y][x] = Constants::Tile_Lava;
+
+                // }
+                // else if (mapData[y][x] == Constants::Tile_Water) {
+                
+                //     // mapData[y][x] = Constants::Tile_Water;
+
+                // }
+                // else if (mapData[y][x] >= Constants::Tile_Counter_00 && mapData[y][x] <= Constants::Tile_Counter_65) {
+                
+                //     // mapData[y][x] = mapData[y][x];
+                //     // mapData[y][x] = 1;
+
+                // }                
+                // else 
+                if (mapData[y][x] == Constants::Tile_Green_Closed) {
 
                     game.getGreenDoor(greenDoorIdx).setX(x);
                     game.getGreenDoor(greenDoorIdx).setY(y);
                     mapData[y][x] = 0;
                     greenDoorIdx++;
-
-                }
-                else if (mapData[y][x] == Constants::Tile_Waters_Edge) {
-                    // mapData[y][x] = Constants::Tile_Lava;
-
-                }
-                else if (mapData[y][x] == Constants::Tile_Lava) {
-                
-                    // mapData[y][x] = Constants::Tile_Lava;
-
-                }
-                else if (mapData[y][x] == Constants::Tile_Water) {
-                
-                    // mapData[y][x] = Constants::Tile_Water;
-
-                }
-                else if (mapData[y][x] >= Constants::Tile_Counter_00 && mapData[y][x] <= Constants::Tile_Counter_65) {
-                
-                    // mapData[y][x] = mapData[y][x];
-                    // mapData[y][x] = 1;
 
                 }
                 else if (mapData[y][x] == Constants::Tile_Block) {
@@ -130,11 +131,11 @@ void loadMap(uint8_t level) {
                     portalKeyIdx++;
 
                 }
-                else {
+                // else {
                 
-                    mapData[y][x] = 0;
+                //     mapData[y][x] = 0;
                 
-                }
+                // }
 
             }
                 
@@ -227,11 +228,6 @@ bool isWalkable(ObjectType objectType, uint8_t x, uint8_t y, int8_t xOffset, int
                 case Constants::Temp_Lava_And_Partial_Wall:
                 case Constants::Temp_Lava:
                     return false;
-
-            
-                // case Constants::Tile_Partial_Wall:
-                // case Constants::Tile_Lava_And_Partial_Wall:
-                //     return false;
 
             }
 

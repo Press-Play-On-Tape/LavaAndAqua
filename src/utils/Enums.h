@@ -11,7 +11,7 @@ struct LevelSelect {
 
     uint8_t getSelectedPuzzle() {
 
-        return (this->y * 5) + this->x;
+        return (this->y * 4) + this->x;
         
     }
 

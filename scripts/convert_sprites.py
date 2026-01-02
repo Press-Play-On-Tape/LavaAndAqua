@@ -116,8 +116,8 @@ convert_header(IMAGES + 'Titles/Scoundrel.png',                                 
 convert_header(IMAGES + 'Tiles.png',                                                BASE + 'Images.hpp', 'Tiles', 4, 8, 8)
 convert_header(IMAGES + 'Titles/ClearProgress.png',                                 BASE + 'Images.hpp', 'ClearProgress', 4)
 
-convert_header(IMAGES + 'Levels_Select.png',                                        BASE + 'Images.hpp', 'Levels_Select', 4, 16, 16)
-convert_header(IMAGES + 'Levels_Cursor.png',                                        BASE + 'Images.hpp', 'Levels_Cursor', 4)
+convert_header(IMAGES + 'Levels_Select.png',                                        BASE + 'Images.hpp', 'Levels_Select', 4, 17, 16)
+convert_header(IMAGES + 'Levels_Cursor.png',                                        BASE + 'Images.hpp', 'Levels_Cursor', 4, 17, 16)
 convert_header(IMAGES + 'Levels_HUD.png',                                           BASE + 'Images.hpp', 'Levels_HUD', 4, 53, 64)
 convert_header(IMAGES + 'Levels_Status.png',                                        BASE + 'Images.hpp', 'Levels_Status', 4, 43, 8)
 convert_header(IMAGES + 'Levels_Number.png',                                        BASE + 'Images.hpp', 'Levels_Number', 4, 11, 8)

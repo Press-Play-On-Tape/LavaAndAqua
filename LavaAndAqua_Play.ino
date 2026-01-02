@@ -288,14 +288,13 @@ void play(ArduboyGBase_Config<ABG_Mode::L4_Triplane> &a) {
     // Portal ..
 
     if (game.getPortal().isOpen()) {
-        // Serial.print("> ");
-        // Serial.print((game.getFrameCount() % 32) / 8);
-        // Serial.println("");
+
         SpritesU::drawPlusMaskFX((game.getPortal().getX() * 8) - Constants::XOffset_Pixels, ((game.getPortal().getY() - game.getWorld_Y_Offset()) * 8) - Constants::YOffset_Pixels, Images::Tiles, ((Constants::Image_Portal + ((game.getFrameCount() % 40) / 8)) * 3) + currentPlane);
     }
     else {
-    // Serial.println("sdas");
+
         SpritesU::drawPlusMaskFX((game.getPortal().getX() * 8) - Constants::XOffset_Pixels, ((game.getPortal().getY() - game.getWorld_Y_Offset()) * 8) - Constants::YOffset_Pixels, Images::Tiles, (Constants::Image_Portal_Inactive * 3) + currentPlane);
+        
     }
 
 
