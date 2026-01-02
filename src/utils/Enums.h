@@ -86,18 +86,3 @@ inline GameState operator--(GameState &c, int) {
     --c;
     return result;
 }
-
-enum Direction : uint8_t { 
-    Down,
-    Up
-};
-
-
-enum PuffMode : uint8_t { 
-    EquipWeapon,
-    Run,
-    Heart,
-    Burn,
-    Fight_BareHand,
-    Fight_Weapon,
-};

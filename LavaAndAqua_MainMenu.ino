@@ -46,7 +46,10 @@ void title_Update() {
             if (aReleased && levelSelect.aCounter < 10) {
 
                 game.setLevel(levelSelect.getSelectedPuzzle());
+                // numberOfMoves = game.getPuzzle(game.getLevel()).getNumberOfMoves();
+                // game.getPuzzle(game.getLevel()).setNumberOfMoves(0);
                 gameState = GameState::Play_Init;
+
             }
 
             if (pressed & A_BUTTON) {
@@ -123,7 +126,6 @@ void title_Update() {
 
 void title(ArduboyGBase_Config<ABG_Mode::L4_Triplane> &a) {
        
-
     if (a.needsUpdate()) title_Update();
 
     uint8_t currentPlane = a.currentPlane();

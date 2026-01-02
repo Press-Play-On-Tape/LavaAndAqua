@@ -2,17 +2,6 @@
 #include "../../fxdata/fxdata.h"
 #include "../../fxdata/images/Images.h"
 
-#define DEBUG_PRINT    Serial.print
-#define DEBUG_PRINTLN  Serial.println
-#define DEBUG_BREAK    asm volatile("break\n");
-
-#define _DEBUG
-#define _DEBUG_BID
-#define _DEBUG_SKIP_DEAL
-#define _DEBUG_BASIC
-#define _DEBUG_RAND
-
-#define DEBUG_PLAY_ADDCARD
 
 namespace Constants {
 
@@ -66,6 +55,4 @@ namespace Constants {
     constexpr uint8_t Temp_Lava = 97;
     constexpr uint8_t Temp_Lava_And_Partial_Wall = 96;
     
-
-
 };

@@ -124,6 +124,9 @@ convert_header(IMAGES + 'Levels_Number.png',                                    
 convert_header(IMAGES + 'Levels_NumberOfMoves.png',                                 BASE + 'Images.hpp', 'Levels_NumberOfMoves', 4)
 convert_header(IMAGES + 'Levels_NumberOfMoves_Numbers.png',                         BASE + 'Images.hpp', 'Levels_NumberOfMoves_Numbers', 4, 5, 8)
 
+convert_header(IMAGES + 'HUD/Mini_HUD.png',                                         BASE + 'Images.hpp', 'Mini_HUD', 4)
+convert_header(IMAGES + 'HUD/Numbers_HUD.png',                                      BASE + 'Images.hpp', 'Numbers_HUD', 4, 8, 8)
+
 convert_header(IMAGES + 'Tiles/Lava_01.png',                                        BASE + 'Images.hpp', 'Lava_01', 4, 8, 8)
 convert_header(IMAGES + 'Tiles/Lava_02.png',                                        BASE + 'Images.hpp', 'Lava_02', 4, 16, 8)
 convert_header(IMAGES + 'Tiles/Lava_03.png',                                        BASE + 'Images.hpp', 'Lava_03', 4, 24, 8)

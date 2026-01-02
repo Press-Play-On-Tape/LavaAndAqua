@@ -2,11 +2,10 @@
 #include "fxdata/fxdata.h"
 
 
-uint8_t mapData[11][16];
-
 void play_Init() { 
 
-    game.resetFrameCount();
+    // game.resetFrameCount();
+    game.setMoveCount(0);
     gameState = GameState::Play_Shuffle;
 
     loadMap(game.getLevel());
@@ -33,19 +32,22 @@ void play_Update() {
     }
 
     else if (justPressed & LEFT_BUTTON && isWalkable(ObjectType::Player, -1, 0)) {
-        game.getPlayer().setX(game.getPlayer().getX() - 1);
+        game.captureMove();
+        game.getPlayer().decX();
         updateGreenDoors();
         incLavaAndWater();
     }
 
     else if (justPressed & RIGHT_BUTTON && isWalkable(ObjectType::Player, 1, 0)) {
-        game.getPlayer().setX(game.getPlayer().getX() + 1);
+        game.captureMove();
+        game.getPlayer().incX();
         updateGreenDoors();
         incLavaAndWater();
     }
 
     else if (justPressed & UP_BUTTON && isWalkable(ObjectType::Player, 0, -1)) {
-        game.getPlayer().setY(game.getPlayer().getY() - 1);
+        game.captureMove();
+        game.getPlayer().decY();
         updateGreenDoors();
         incLavaAndWater();
         fix_World_Y_Offset();
@@ -53,11 +55,16 @@ void play_Update() {
     }
 
     else if (justPressed & DOWN_BUTTON && isWalkable(ObjectType::Player, 0, 1)) {
-        game.getPlayer().setY(game.getPlayer().getY() + 1);
+        game.captureMove();
+        game.getPlayer().incY();
         updateGreenDoors();
         incLavaAndWater();
         fix_World_Y_Offset();
 
+    }
+
+    if (justPressed & B_BUTTON) {
+        game.revertMove();
     }
 
 
@@ -67,7 +74,7 @@ void play_Update() {
 
     if (game.getPlayer().getX() == game.getPortal().getX() && game.getPlayer().getY() == game.getPortal().getY()) {
     
-        Serial.println("Level Complete");
+        // Serial.println("Level Complete");
        
         game.getPuzzle(game.getLevel()).setStatus(PuzzleStatus::Complete);
         game.getPuzzle(game.getLevel()).setNumberOfMoves(game.getMoveCount());
@@ -110,10 +117,9 @@ void play_Update() {
         
         if (game.getPlayer().getX() == game.getPortalKey(i).getX() && game.getPlayer().getY() == game.getPortalKey(i).getY()) {
         
-            Serial.println("Portal Key");
             game.decPortalKeyCount();
-            game.getPortalKey(i).setX(255);
-            game.getPortalKey(i).setY(255);
+            game.getPortalKey(i).setY(15);
+            game.getPortalKey(i).setY(15);
 
             if (game.getPortalKeyCount() == 0) {
             
@@ -135,52 +141,56 @@ void play(ArduboyGBase_Config<ABG_Mode::L4_Triplane> &a) {
     if (a.needsUpdate()) play_Update();
 
     uint24_t levelIdx = FX::readIndexedUInt24(Images::Level_Images, game.getLevel());
-    SpritesU::drawOverwriteFX(-Constants::XOffset_Pixels, -Constants::YOffset_Pixels - game.getWorld_Y_Offset() * 8, levelIdx, currentPlane);
+    SpritesU::drawOverwriteFX(0, - game.getWorld_Y_Offset() * 8, levelIdx, currentPlane);
 
+    SpritesU::drawOverwriteFX(120, 0, Images::Mini_HUD, currentPlane);
+    SpritesU::drawOverwriteFX(121, 17, Images::Numbers_HUD, ((game.getLevel() + 1) * 3) + currentPlane);
+    SpritesU::drawOverwriteFX(121, 50, Images::Numbers_HUD, ((game.getMoveCount() / 10) * 3) + currentPlane);
+    SpritesU::drawOverwriteFX(121, 54, Images::Numbers_HUD, ((game.getMoveCount() % 100) * 3) + currentPlane);
 
-    for (uint16_t y = game.getWorld_Y_Offset(); y < Constants::Map_Y_Count; y++) {
+    for (uint8_t y = game.getWorld_Y_Offset(); y < Constants::Map_Y_Count; y++) {
 
         if (((y - game.getWorld_Y_Offset()) * 8) - Constants::YOffset_Pixels > 63) continue;
 
-        for (uint16_t x = 0; x < Constants::Map_X_Count; x++) {
+        for (uint8_t x = 0; x < Constants::Map_X_Count; x++) {
 
-            if (mapData[y][x] >= Constants::Tile_Counter_00 && mapData[y][x] <= Constants::Tile_Counter_65) {
+            if (game.mapData[y][x] >= Constants::Tile_Counter_00 && game.mapData[y][x] <= Constants::Tile_Counter_65) {
 
-                SpritesU::drawOverwriteFX((x * 8) - Constants::XOffset_Pixels, ((y - game.getWorld_Y_Offset()) * 8) - Constants::YOffset_Pixels, Images::Numbers_5x3_2D_WB, ((mapData[y][x] - Constants::Tile_Counter_00) * 3) + currentPlane);
+                SpritesU::drawOverwriteFX((x * 8) - Constants::XOffset_Pixels, ((y - game.getWorld_Y_Offset()) * 8) - Constants::YOffset_Pixels, Images::Numbers_5x3_2D_WB, ((game.mapData[y][x] - Constants::Tile_Counter_00) * 3) + currentPlane);
 
             }
-            else if (mapData[y][x] == Constants::Tile_Waters_Edge) {
+            else if (game.mapData[y][x] == Constants::Tile_Waters_Edge) {
 
                 SpritesU::drawPlusMaskFX((x * 8) - Constants::XOffset_Pixels, ((y - game.getWorld_Y_Offset()) * 8) - Constants::YOffset_Pixels, Images::Tiles, (Constants::Image_Waters_Edge * 3) + currentPlane);
 
             }
-            else if (mapData[y][x] == Constants::Tile_Green_Switch) {
+            else if (game.mapData[y][x] == Constants::Tile_Green_Switch) {
 
                 SpritesU::drawPlusMaskFX((x * 8) - Constants::XOffset_Pixels, ((y - game.getWorld_Y_Offset()) * 8) - Constants::YOffset_Pixels, Images::Tiles, (Constants::Image_Green_Switch * 3) + currentPlane);
 
             }
-            else if (mapData[y][x] == Constants::Tile_Partial_Wall) {
+            else if (game.mapData[y][x] == Constants::Tile_Partial_Wall) {
 
                 SpritesU::drawPlusMaskFX((x * 8) - Constants::XOffset_Pixels, ((y - game.getWorld_Y_Offset()) * 8) - Constants::YOffset_Pixels, Images::Tiles, (Constants::Image_Partial_Wall * 3) + currentPlane);
 
             }
-            else if (mapData[y][x] == Constants::Tile_Lava_And_Partial_Wall) {
+            else if (game.mapData[y][x] == Constants::Tile_Lava_And_Partial_Wall) {
 
                 SpritesU::drawPlusMaskFX((x * 8) - Constants::XOffset_Pixels, ((y - game.getWorld_Y_Offset()) * 8) - Constants::YOffset_Pixels, Images::Tiles, ((Constants::Image_Lava_And_Partial_Wall + ((game.getFrameCount() % 32) / 8)) * 3) + currentPlane);
 
             }
-            else if (mapData[y][x] == Constants::Tile_Water_And_Partial_Wall) {
+            else if (game.mapData[y][x] == Constants::Tile_Water_And_Partial_Wall) {
 
                 SpritesU::drawPlusMaskFX((x * 8) - Constants::XOffset_Pixels, ((y - game.getWorld_Y_Offset()) * 8) - Constants::YOffset_Pixels, Images::Tiles, ((Constants::Image_Water_And_Partial_Wall + ((game.getFrameCount() % 32) / 8)) * 3) + currentPlane);
 
             }
-            else if (mapData[y][x] == Constants::Tile_Lava) {
+            else if (game.mapData[y][x] == Constants::Tile_Lava) {
 
                 uint8_t len = 1;
 
                 for (uint8_t i = 1; i < 8; i++) {
 
-                    if (mapData[y][x + i] == Constants::Tile_Lava) {
+                    if (game.mapData[y][x + i] == Constants::Tile_Lava) {
                         len = i + 1;
                     }
                     else {
@@ -197,13 +207,13 @@ void play(ArduboyGBase_Config<ABG_Mode::L4_Triplane> &a) {
 
             }
 
-            else if (mapData[y][x] == Constants::Tile_Water) {
+            else if (game.mapData[y][x] == Constants::Tile_Water) {
 
                 uint8_t len = 1;
 
                 for (uint8_t i = 1; i < 8; i++) {
 
-                    if (mapData[y][x + i] == Constants::Tile_Water) {
+                    if (game.mapData[y][x + i] == Constants::Tile_Water) {
                         len = i + 1;
                     }
                     else {
@@ -220,7 +230,7 @@ void play(ArduboyGBase_Config<ABG_Mode::L4_Triplane> &a) {
 
             }
 
-            if (mapData[y][x] == Constants::Tile_Basalt) {
+            if (game.mapData[y][x] == Constants::Tile_Basalt) {
 
                 SpritesU::drawPlusMaskFX((x * 8) - Constants::XOffset_Pixels, ((y - game.getWorld_Y_Offset()) * 8) - Constants::YOffset_Pixels, Images::Tiles, (Constants::Image_Basalt * 3) + currentPlane);
 
@@ -267,7 +277,7 @@ void play(ArduboyGBase_Config<ABG_Mode::L4_Triplane> &a) {
 
         GreenDoor &greenDoor = game.getGreenDoor(i);
 
-        if (mapData[greenDoor.getY()][greenDoor.getX()] != Constants::Tile_Basalt) {
+        if (game.mapData[greenDoor.getY()][greenDoor.getX()] != Constants::Tile_Basalt) {
 
             if (greenDoor.isActive()) {
 
@@ -294,7 +304,7 @@ void play(ArduboyGBase_Config<ABG_Mode::L4_Triplane> &a) {
     else {
 
         SpritesU::drawPlusMaskFX((game.getPortal().getX() * 8) - Constants::XOffset_Pixels, ((game.getPortal().getY() - game.getWorld_Y_Offset()) * 8) - Constants::YOffset_Pixels, Images::Tiles, (Constants::Image_Portal_Inactive * 3) + currentPlane);
-        
+
     }
 
 

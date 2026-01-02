@@ -12,6 +12,11 @@
 
 struct Game {
 
+    public:
+
+        uint8_t mapData[11][16];
+        uint8_t prevMapData[Constants::Undo_Count][11][16];
+
     private:
 
         uint8_t level = 0;
@@ -46,6 +51,7 @@ struct Game {
         GreenDoor &getGreenDoor(uint8_t idx)            { return this->greenDoors[idx]; }
         Puzzle &getPuzzle(uint8_t level)                { return this->puzzles[level]; }
 
+        void setMoveCount(uint16_t val)                 { this->moveCount = val; }
         void setFrameCount(uint16_t val)                { this->frameCount = val; }
         void setWorld_Y_Offset(uint8_t val)             { this->world_Y_Offset = val; }
         void setLevel(uint8_t val)                      { this->level = val; }
@@ -55,15 +61,15 @@ struct Game {
         
             for (uint8_t i = 0; i < Constants::Block_Count; i++) {
             
-                this->blocks[i].setX(255);
-                this->blocks[i].setY(255);
+                this->blocks[i].setX(15);
+                this->blocks[i].setY(15);
 
             }
 
             for (uint8_t i = 0; i < Constants::Portal_Key_Count; i++) {
 
-                this->portalKeys[i].setX(255);
-                this->portalKeys[i].setY(255);
+                this->portalKeys[i].setX(15);
+                this->portalKeys[i].setY(15);
 
             }
 
@@ -88,36 +94,126 @@ struct Game {
 
         void captureMove() {
 
-            // this->player.captureMove();
+            this->player.captureMove();
+            this->portal.captureMove();
 
-            // for (uint8_t i = 0; i < Constants::Block_Count; i++) {
+
+            for (uint8_t i = 0; i < Constants::Undo_Count - 1; i++) {
+
+                for (uint8_t y = 0; y < Constants::Map_Y_Count; y++) {
+
+                    for (uint8_t x = 0; x < Constants::Map_X_Count; x++) {
+
+                        this->prevMapData[i][y][x] = this->prevMapData[i + 1][y][x];            
+
+                    }
+                }
+
+            }    
+
+            for (uint8_t y = 0; y < Constants::Map_Y_Count; y++) {
+
+                for (uint8_t x = 0; x < Constants::Map_X_Count; x++) {
+
+                    this->prevMapData[Constants::Undo_Count - 1][y][x]= this->mapData[y][x];   
+
+                }
+
+            }
+
+            for (uint8_t i = 0; i < Constants::Block_Count; i++) {
             
-            //     Block &block = this->blocks[i];
-            //     block.captureMove();
+                Block &block = this->blocks[i];
+                block.captureMove();
 
-            // }
+            }
+            
+            for (uint8_t i = 0; i < Constants::Green_Door_Count; i++) {
+            
+                GreenDoor &greenDoor = this->greenDoors[i];
+                greenDoor.captureMove();
 
-            // this->moveCount++;
-            // if (this->undoCount < Constants::Undo_Count) this->undoCount++;
+            }
+            
+            for (uint8_t i = 0; i < Constants::Portal_Key_Count; i++) {
+            
+                PortalKey &portalKey = this->portalKeys[i];
+                portalKey.captureMove();
+
+            }
+
+            this->moveCount++;
+            if (this->undoCount < Constants::Undo_Count) this->undoCount++;
 
         }
 
         void revertMove() {
 
-            // if (this->undoCount == 0) return;
+            if (this->undoCount == 0) return;
 
-            // this->moveCount--;
-            // this->player.revertMove();
+            this->moveCount--;
+            this->player.revertMove();
+            this->portal.revertMove();
+       
 
-            // for (uint8_t i = 0; i < Constants::Block_Count; i++) {
+            for (uint8_t y = 0; y < Constants::Map_Y_Count; y++) {
+
+                for (uint8_t x = 0; x < Constants::Map_X_Count; x++) {
+
+                    this->mapData[y][x] = this->prevMapData[Constants::Undo_Count - 1][y][x];   
+
+                }
+
+            }
+
+            for (uint8_t i = Constants::Undo_Count - 1; i > 0; i--) {
+
+                for (uint8_t y = 0; y < Constants::Map_Y_Count; y++) {
+
+                    for (uint8_t x = 0; x < Constants::Map_X_Count; x++) {
+
+                        this->prevMapData[i][y][x] = this->prevMapData[i - 1][y][x];            
+
+                    }
+                }
+
+            }    
+
+            for (uint8_t y = 0; y < Constants::Map_Y_Count; y++) {
+
+                for (uint8_t x = 0; x < Constants::Map_X_Count; x++) {
+
+                    this->prevMapData[0][y][x] = 0;   
+
+                }
+
+            }
+
+
+            for (uint8_t i = 0; i < Constants::Block_Count; i++) {
             
-            //     Block &block = this->blocks[i];
-            //     block.revertMove();
+                Block &block = this->blocks[i];
+                block.revertMove();
 
-            // }
+            }
 
-            // this->undoCount--;
+            for (uint8_t i = 0; i < Constants::Green_Door_Count; i++) {
+            
+                GreenDoor &greenDoor = this->greenDoors[i];
+                greenDoor.revertMove();
+
+            }
+
+            for (uint8_t i = 0; i < Constants::Portal_Key_Count; i++) {
+            
+                PortalKey &portalKey = this->portalKeys[i];
+                portalKey.revertMove();
+
+            }
+
+            this->undoCount--;
 
         }
+
 
 };

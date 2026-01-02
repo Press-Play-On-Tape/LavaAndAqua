@@ -5,7 +5,6 @@
 //  Handle state updates .. 
 //
 
-#if not defined(DEBUG) && not defined(DEBUG_BASIC)
 void splashScreen_Update() { 
 
     game.incFrameCount(); 
@@ -40,4 +39,3 @@ void splashScreen(ArduboyGBase_Config<ABG_Mode::L4_Triplane> &a) {
     if (a.needsUpdate()) splashScreen_Update();
 
 }
-#endif

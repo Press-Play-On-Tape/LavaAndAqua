@@ -30,15 +30,11 @@ decltype(a) a;
 
 Cookie cookie;
 Game &game = cookie.game;
-
-#if not defined(DEBUG) && not defined(DEBUG_BASIC)
 GameState gameState = GameState::SplashScreen_Start;
-#else
-GameState gameState = GameState::Title_Init;
-#endif
 GameState prevGameState = GameState::SplashScreen_Start;
 
 uint8_t titleCounter = 0;
+// uint8_t numberOfMoves = 0;
 LevelSelect levelSelect;
 
 
@@ -70,11 +66,9 @@ void loop() {
 
     switch (gameState) {
 
-        #if not defined(DEBUG) && not defined(DEBUG_BASIC)
-            case GameState::SplashScreen_Start ... GameState::SplashScreen_End:
-                splashScreen(a);
-                break;
-        #endif
+        case GameState::SplashScreen_Start ... GameState::SplashScreen_End:
+            splashScreen(a);
+            break;
 
         case GameState::Title_Init:
             title_Init();
