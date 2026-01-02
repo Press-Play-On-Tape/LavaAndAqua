@@ -27,7 +27,8 @@ void loadMap(uint8_t level) {
 
     uint8_t blockIdx = 0;
     uint8_t portalKeyIdx = 0;
-    
+    uint8_t greenDoorIdx = 0;
+
     game.resetLevel();
 
     // Load Map Data ..
@@ -58,27 +59,48 @@ void loadMap(uint8_t level) {
 
             for (uint8_t x = 0; x < Constants::Map_X_Count; x++) {
                     
-                if (mapData[y][x] == Constants::Tile_Lava) {
+                if (mapData[y][x] == Constants::Tile_Border) {
                 
-                    lavaData[y][x] = Constants::Tile_Lava;
+                    // mapData[y][x] = Constants::Tile_Border;
+
+                }
+                else if (mapData[y][x] == Constants::Tile_Green_Switch) {
+                    // mapData[y][x] = Constants::Tile_Lava;
+
+                }
+                else if (mapData[y][x] == Constants::Tile_Green_Closed) {
+
+                    game.getGreenDoor(greenDoorIdx).setX(x);
+                    game.getGreenDoor(greenDoorIdx).setY(y);
+                    mapData[y][x] = 0;
+                    greenDoorIdx++;
+
+                }
+                else if (mapData[y][x] == Constants::Tile_Waters_Edge) {
+                    // mapData[y][x] = Constants::Tile_Lava;
+
+                }
+                else if (mapData[y][x] == Constants::Tile_Lava) {
+                
+                    // mapData[y][x] = Constants::Tile_Lava;
 
                 }
                 else if (mapData[y][x] == Constants::Tile_Water) {
                 
-                    lavaData[y][x] = Constants::Tile_Water;
+                    // mapData[y][x] = Constants::Tile_Water;
 
                 }
-                else if (mapData[y][x] >= Constants::Tile_Counter_00 && mapData[y][x] <= Constants::Tile_Counter_50) {
+                else if (mapData[y][x] >= Constants::Tile_Counter_00 && mapData[y][x] <= Constants::Tile_Counter_65) {
                 
-                    lavaData[y][x] = mapData[y][x];
-                    mapData[y][x] = 1;
+                    // mapData[y][x] = mapData[y][x];
+                    // mapData[y][x] = 1;
 
                 }
                 else if (mapData[y][x] == Constants::Tile_Block) {
                 
                     game.getBlock(blockIdx).setX(x);
                     game.getBlock(blockIdx).setY(y);
-                    mapData[y][x] = 1;
+                    mapData[y][x] = 0;
                     blockIdx++;
 
                 }
@@ -87,7 +109,7 @@ void loadMap(uint8_t level) {
                     game.getPortal().setX(x);
                     game.getPortal().setY(y);
                     game.getPortal().setOpen(true);
-                    mapData[y][x] = 1;
+                    mapData[y][x] = 0;
 
                 }
                 else if (mapData[y][x] == Constants::Tile_Portal_Inactive) {
@@ -95,20 +117,20 @@ void loadMap(uint8_t level) {
                     game.getPortal().setX(x);
                     game.getPortal().setY(y);
                     game.getPortal().setOpen(false);
-                    mapData[y][x] = 1;
+                    mapData[y][x] = 0;
 
                 }
                 else if (mapData[y][x] == Constants::Tile_Portal_Key) {
             
                     game.getPortalKey(portalKeyIdx).setX(x);
                     game.getPortalKey(portalKeyIdx).setY(y);
-                    mapData[y][x] = 1;
+                    mapData[y][x] = 0;
                     portalKeyIdx++;
 
                 }
                 else {
                 
-                    lavaData[y][x] = 0;
+                    mapData[y][x] = 0;
                 
                 }
 
@@ -142,26 +164,29 @@ bool isWalkable(ObjectType objectType, uint8_t x, uint8_t y, int8_t xOffset, int
 
             switch (mapData[game.getPlayer().getY() + yOffset][game.getPlayer().getX() + xOffset]) {
             
-                case 0:
+                case Constants::Tile_Border:
                     return false;
 
             }
 
-            switch (lavaData[game.getPlayer().getY() + yOffset][game.getPlayer().getX() + xOffset]) {
+            switch (mapData[game.getPlayer().getY() + yOffset][game.getPlayer().getX() + xOffset]) {
             
                 case Constants::Tile_Basalt:
                     return false;
             
-                case Constants::Tile_Counter_00 ... Constants::Tile_Counter_50:
+                case Constants::Tile_Counter_00 ... Constants::Tile_Counter_65:
                     return false;
 
             }
+
 
             // Push block?
 
             for (uint8_t i = 0; i < Constants::Block_Count; i++) {
 
                 Block &block = game.getBlock(i);
+
+                if (!block.isActive()) break;
 
                 if (block.getX() == game.getPlayer().getX() + xOffset && block.getY() == game.getPlayer().getY() + yOffset) {
                     // Serial.println("Push");
@@ -170,7 +195,10 @@ bool isWalkable(ObjectType objectType, uint8_t x, uint8_t y, int8_t xOffset, int
 
                         block.setX(block.getX() + xOffset);
                         block.setY(block.getY() + yOffset);
-                        lavaData[block.getY()][block.getX()] = 0;
+
+                        if (mapData[block.getY()][block.getX()] == Constants::Tile_Lava) {
+                            mapData[block.getY()][block.getX()] = 0;
+                        }
 
                         return true;
                     
@@ -190,8 +218,18 @@ bool isWalkable(ObjectType objectType, uint8_t x, uint8_t y, int8_t xOffset, int
 
             switch (mapData[y + yOffset][x + xOffset]) {
             
-                case 0:
+                case Constants::Tile_Border:
+                case Constants::Tile_Basalt:
+                case Constants::Tile_Counter_00 ... Constants::Tile_Counter_65:
+                case Constants::Tile_Waters_Edge:
+                case Constants::Temp_Lava_And_Partial_Wall:
+                case Constants::Temp_Lava:
                     return false;
+
+            
+                // case Constants::Tile_Partial_Wall:
+                // case Constants::Tile_Lava_And_Partial_Wall:
+                //     return false;
 
             }
 
@@ -200,6 +238,8 @@ bool isWalkable(ObjectType objectType, uint8_t x, uint8_t y, int8_t xOffset, int
             for (uint8_t i = 0; i < Constants::Block_Count; i++) {
 
                 Block &block = game.getBlock(i);
+                
+                if (!block.isActive()) break;
 
                 if (block.getX() == x + xOffset && block.getY() == y + yOffset) {
 
@@ -209,20 +249,81 @@ bool isWalkable(ObjectType objectType, uint8_t x, uint8_t y, int8_t xOffset, int
 
             }
 
+            // Is lava blocked by a block?
+
+            for (uint8_t i = 0; i < Constants::Green_Door_Count; i++) {
+
+                GreenDoor &greenDoor = game.getGreenDoor(i);
+                
+                if (!greenDoor.isActive()) break;
+
+                if (!greenDoor.isOpen() && greenDoor.getX() == x + xOffset && greenDoor.getY() == y + yOffset) {
+
+                    return false;
+
+                }
+
+            }
+
+            return true;
+
+        case ObjectType::Water:
+
+            switch (mapData[y + yOffset][x + xOffset]) {
+            
+                case Constants::Tile_Border:
+                case Constants::Tile_Basalt:
+                case Constants::Tile_Counter_00 ... Constants::Tile_Counter_65:
+                case Constants::Tile_Waters_Edge:
+                case Constants::Temp_Water_And_Partial_Wall:
+                case Constants::Temp_Water:
+                    return false;
+
+            }
+
+            // Is the water blocked by a block?
+
+            for (uint8_t i = 0; i < Constants::Block_Count; i++) {
+
+                Block &block = game.getBlock(i);
+                
+                if (!block.isActive()) break;
+
+                if (block.getX() == x + xOffset && block.getY() == y + yOffset) {
+
+                    return false;
+
+                }
+
+            }
+
+
+            // Is lava blocked by a green door?
+
+            for (uint8_t i = 0; i < Constants::Green_Door_Count; i++) {
+
+                GreenDoor &greenDoor = game.getGreenDoor(i);
+                
+                if (!greenDoor.isActive()) break;
+
+                if (!greenDoor.isOpen() && greenDoor.getX() == x + xOffset && greenDoor.getY() == y + yOffset) {
+
+                    return false;
+
+                }
+
+            }
+            
             return true;
 
         case ObjectType::Block:
 
             switch (mapData[y + yOffset][x + xOffset]) {
             
-                case 0:
-                    return false;
-
-            }
-
-            switch (lavaData[y + yOffset][x + xOffset]) {
-
-                case Constants::Tile_Counter_00 ... Constants::Tile_Counter_50:
+                case Constants::Tile_Border:
+                case Constants::Tile_Counter_00 ... Constants::Tile_Counter_65:
+                case Constants::Tile_Partial_Wall:
+                case Constants::Tile_Lava_And_Partial_Wall:
                     return false;
 
             }
@@ -234,6 +335,8 @@ bool isWalkable(ObjectType objectType, uint8_t x, uint8_t y, int8_t xOffset, int
 
                 Block &block = game.getBlock(i);
 
+                if (!block.isActive()) break;
+                
                 if (block.getX() == game.getPlayer().getX() + (2 * xOffset) && block.getY() == game.getPlayer().getY() + (2 * yOffset)) {
                     Serial.println("Push second");
                 
@@ -261,11 +364,11 @@ bool isWalkable(ObjectType objectType, uint8_t x, uint8_t y, int8_t xOffset, int
 
 bool isLava(uint8_t x, uint8_t y) {
 
-    return lavaData[y][x] != 0;
+    return mapData[y][x] != 0;
     
 }
-
-void incLava() {
+bool debugMe = false;
+void incLavaAndWater() {
 
     // Water first ..
 
@@ -273,31 +376,50 @@ void incLava() {
 
         for (uint16_t x = 1; x < Constants::Map_X_Count - 1; x++) {
 
-// if (lavaData[y][x] == Constants::Tile_Water && x ==7 & y == 2)      {
+            if (mapData[y][x] == Constants::Tile_Water || mapData[y][x] == Constants::Tile_Water_And_Partial_Wall) {
 
-// if (lavaData[y][x] == Constants::Tile_Water && lavaData[y - 1][x] == Constants::Tile_Lava)      {
-// Serial.println("a");
-// }
-// if (lavaData[y][x] == Constants::Tile_Water && lavaData[y - 1][x] == 0 && isWalkable(ObjectType::Lava, x, y, 0, -1) && !isPortal(x, y - 1))      {
-// Serial.println("b");
-// }
-// DEBUG_BREAK
-// }
-            if (lavaData[y][x] == Constants::Tile_Water && lavaData[y][x - 1] == Constants::Tile_Lava)      { lavaData[y][x - 1] = Constants::Tile_Basalt; }
-            if (lavaData[y][x] == Constants::Tile_Water && lavaData[y][x + 1] == Constants::Tile_Lava)      { lavaData[y][x + 1] = Constants::Tile_Basalt; }
-            if (lavaData[y][x] == Constants::Tile_Water && lavaData[y - 1][x] == Constants::Tile_Lava)      { lavaData[y - 1][x] = Constants::Tile_Basalt; }
-            if (lavaData[y][x] == Constants::Tile_Water && lavaData[y + 1][x] == Constants::Tile_Lava)      { lavaData[y + 1][x] = Constants::Tile_Basalt; }
+                if (mapData[y][x - 1] == Constants::Tile_Lava)      { mapData[y][x - 1] = Constants::Tile_Basalt; }
+                if (mapData[y][x + 1] == Constants::Tile_Lava)      { mapData[y][x + 1] = Constants::Tile_Basalt; }
+                if (mapData[y - 1][x] == Constants::Tile_Lava)      { mapData[y - 1][x] = Constants::Tile_Basalt; }
+                if (mapData[y + 1][x] == Constants::Tile_Lava)      { mapData[y + 1][x] = Constants::Tile_Basalt; }
 
-            // if (lavaData[y][x] == Constants::Tile_Water && lavaData[y][x - 1] == 0 && isWalkable(ObjectType::Lava, x, y, -1, 0) && !isPortal(x - 1, y))      { lavaData[y][x - 1] = 101;}
-            // if (lavaData[y][x] == Constants::Tile_Water && lavaData[y][x + 1] == 0 && isWalkable(ObjectType::Lava, x, y,  1, 0) && !isPortal(x + 1, y))      { lavaData[y][x + 1] = 101;}
+                if (mapData[y][x - 1] != Constants::Tile_Water && mapData[y][x - 1] != Constants::Tile_Water_And_Partial_Wall && isWalkable(ObjectType::Water, x, y, -1, 0) && !isPortal(x - 1, y)) { 
+                    if (mapData[y][x - 1] == Constants::Tile_Partial_Wall) {
+                        mapData[y][x - 1] = Constants::Temp_Water_And_Partial_Wall;
+                    }
+                    else {
+                        mapData[y][x - 1] = Constants::Temp_Water;
+                    }
+                }
 
-            // if (lavaData[y][x] == Constants::Tile_Water && lavaData[y - 1][x] == 0 && isWalkable(ObjectType::Lava, x, y, 0, -1) && !isPortal(x, y - 1))      { lavaData[y - 1][x] = 101;}
-            // if (lavaData[y][x] == Constants::Tile_Water && lavaData[y + 1][x] == 0 && isWalkable(ObjectType::Lava, x, y, 0,  1) && !isPortal(x, y + 1))      { lavaData[y + 1][x] = 101;}
-            if (lavaData[y][x] == Constants::Tile_Water && lavaData[y][x - 1] == 0 && isWalkable(ObjectType::Lava, x, y, -1, 0))      { lavaData[y][x - 1] = 99;}
-            if (lavaData[y][x] == Constants::Tile_Water && lavaData[y][x + 1] == 0 && isWalkable(ObjectType::Lava, x, y,  1, 0))      { lavaData[y][x + 1] = 99;}
+                if (mapData[y][x + 1] != Constants::Tile_Water && mapData[y][x + 1] != Constants::Tile_Water_And_Partial_Wall && isWalkable(ObjectType::Water, x, y, 1, 0) && !isPortal(x + 1, y)) { 
+                    if (mapData[y][x + 1] == Constants::Tile_Partial_Wall) {
+                        mapData[y][x + 1] = Constants::Temp_Water_And_Partial_Wall;
+                    }
+                    else {
+                        mapData[y][x + 1] = Constants::Temp_Water;
+                    }
+                }
 
-            if (lavaData[y][x] == Constants::Tile_Water && lavaData[y - 1][x] == 0 && isWalkable(ObjectType::Lava, x, y, 0, -1))      { lavaData[y - 1][x] = 99;}
-            if (lavaData[y][x] == Constants::Tile_Water && lavaData[y + 1][x] == 0 && isWalkable(ObjectType::Lava, x, y, 0,  1))      { lavaData[y + 1][x] = 99;}
+                if (mapData[y - 1][x] != Constants::Tile_Water && mapData[y - 1][x] != Constants::Tile_Water_And_Partial_Wall && isWalkable(ObjectType::Water, x, y, 0, -1) && !isPortal(x, y - 1)) { 
+                    if (mapData[y - 1][x] == Constants::Tile_Partial_Wall) {
+                        mapData[y - 1][x] = Constants::Temp_Water_And_Partial_Wall;
+                    }
+                    else {
+                        mapData[y - 1][x] = Constants::Temp_Water;
+                    }
+                }
+
+                if (mapData[y + 1][x] != Constants::Tile_Water && mapData[y + 1][x] != Constants::Tile_Water_And_Partial_Wall && isWalkable(ObjectType::Water, x, y, 0, 1) && !isPortal(x, y + 1)) { 
+                    if (mapData[y + 1][x] == Constants::Tile_Partial_Wall) {
+                        mapData[y + 1][x] = Constants::Temp_Water_And_Partial_Wall;
+                    }
+                    else {
+                        mapData[y + 1][x] = Constants::Temp_Water;
+                    }
+                }
+
+            }
 
         }
     
@@ -307,27 +429,62 @@ void incLava() {
 
         for (uint16_t x = 0; x < Constants::Map_X_Count; x++) {
 
-            if (lavaData[y][x] == 99) { lavaData[y][x] = Constants::Tile_Water;}
-       
+            if (mapData[y][x] == Constants::Temp_Water)                     { mapData[y][x] = Constants::Tile_Water;}
+            if (mapData[y][x] == Constants::Temp_Water_And_Partial_Wall)    { mapData[y][x] = Constants::Tile_Water_And_Partial_Wall;}
+
         }
     
     }
-
 
     for (uint16_t y = 1; y < Constants::Map_Y_Count - 1; y++) {
 
         for (uint16_t x = 1; x < Constants::Map_X_Count - 1; x++) {
 
-            if (lavaData[y][x] == Constants::Tile_Lava && lavaData[y][x - 1] == Constants::Tile_Water)      { lavaData[y][x - 1] = Constants::Tile_Basalt; }
-            if (lavaData[y][x] == Constants::Tile_Lava && lavaData[y][x + 1] == Constants::Tile_Water)      { lavaData[y][x + 1] = Constants::Tile_Basalt; }
-            if (lavaData[y][x] == Constants::Tile_Lava && lavaData[y - 1][x] == Constants::Tile_Water)      { lavaData[y - 1][x] = Constants::Tile_Basalt; }
-            if (lavaData[y][x] == Constants::Tile_Lava && lavaData[y + 1][x] == Constants::Tile_Water)      { lavaData[y + 1][x] = Constants::Tile_Basalt; }
+            if (mapData[y][x] == Constants::Tile_Lava || mapData[y][x] == Constants::Tile_Lava_And_Partial_Wall) {
 
-            if (lavaData[y][x] == Constants::Tile_Lava && lavaData[y][x - 1] == 0 && isWalkable(ObjectType::Lava, x, y, -1, 0) && !isPortal(x - 1, y))      { lavaData[y][x - 1] = 98;}
-            if (lavaData[y][x] == Constants::Tile_Lava && lavaData[y][x + 1] == 0 && isWalkable(ObjectType::Lava, x, y,  1, 0) && !isPortal(x + 1, y))      { lavaData[y][x + 1] = 98;}
+                if (mapData[y][x - 1] == Constants::Tile_Water)      { mapData[y][x - 1] = Constants::Tile_Basalt; }
+                if (mapData[y][x + 1] == Constants::Tile_Water)      { mapData[y][x + 1] = Constants::Tile_Basalt; }
+                if (mapData[y - 1][x] == Constants::Tile_Water)      { mapData[y - 1][x] = Constants::Tile_Basalt; }
+                if (mapData[y + 1][x] == Constants::Tile_Water)      { mapData[y + 1][x] = Constants::Tile_Basalt; }
 
-            if (lavaData[y][x] == Constants::Tile_Lava && lavaData[y - 1][x] == 0 && isWalkable(ObjectType::Lava, x, y, 0, -1) && !isPortal(x, y - 1))      { lavaData[y - 1][x] = 98;}
-            if (lavaData[y][x] == Constants::Tile_Lava && lavaData[y + 1][x] == 0 && isWalkable(ObjectType::Lava, x, y, 0,  1) && !isPortal(x, y + 1))      { lavaData[y + 1][x] = 98;}
+
+                if (mapData[y][x - 1] != Constants::Tile_Lava && mapData[y][x - 1] != Constants::Tile_Lava_And_Partial_Wall && isWalkable(ObjectType::Lava, x, y, -1, 0) && !isPortal(x - 1, y)) { 
+                    if (mapData[y][x - 1] == Constants::Tile_Partial_Wall) {
+                        mapData[y][x - 1] = Constants::Temp_Lava_And_Partial_Wall;
+                    }
+                    else {
+                        mapData[y][x - 1] = Constants::Temp_Lava;
+                    }
+                }
+                
+                if (mapData[y][x + 1] != Constants::Tile_Lava && mapData[y][x + 1] != Constants::Tile_Lava_And_Partial_Wall && isWalkable(ObjectType::Lava, x, y, 1, 0) && !isPortal(x + 1, y)) { 
+                    if (mapData[y][x + 1] == Constants::Tile_Partial_Wall) {
+                        mapData[y][x + 1] = Constants::Temp_Lava_And_Partial_Wall;
+                    }
+                    else {
+                        mapData[y][x + 1] = Constants::Temp_Lava;
+                    }
+                }
+
+                if (mapData[y - 1][x] != Constants::Tile_Lava && mapData[y - 1][x] != Constants::Tile_Lava_And_Partial_Wall && isWalkable(ObjectType::Lava, x, y, 0, -1) && !isPortal(x, y - 1)) { 
+                    if (mapData[y - 1][x] == Constants::Tile_Partial_Wall) {
+                        mapData[y - 1][x] = Constants::Temp_Lava_And_Partial_Wall;
+                    }
+                    else {
+                        mapData[y - 1][x] = Constants::Temp_Lava;
+                    }
+                }
+
+                if (mapData[y + 1][x] != Constants::Tile_Lava && mapData[y + 1][x] != Constants::Tile_Lava_And_Partial_Wall && isWalkable(ObjectType::Lava, x, y, 0, 1) && !isPortal(x, y + 1)) { 
+                    if (mapData[y + 1][x] == Constants::Tile_Partial_Wall) {
+                        mapData[y + 1][x] = Constants::Temp_Lava_And_Partial_Wall;
+                    }
+                    else {
+                        mapData[y + 1][x] = Constants::Temp_Lava;
+                    }
+                }
+
+            }
 
         }
     
@@ -337,15 +494,16 @@ void incLava() {
 
         for (uint16_t x = 0; x < Constants::Map_X_Count; x++) {
 
-            if (lavaData[y][x] == 98) { lavaData[y][x] = Constants::Tile_Lava;}
+            if (mapData[y][x] == Constants::Temp_Lava)                      { mapData[y][x] = Constants::Tile_Lava;}
+            if (mapData[y][x] == Constants::Temp_Lava_And_Partial_Wall)     { mapData[y][x] = Constants::Tile_Lava_And_Partial_Wall;}
        
-            if (lavaData[y][x] >= Constants::Tile_Counter_00 && lavaData[y][x] <= Constants::Tile_Counter_50) {
+            if (mapData[y][x] >= Constants::Tile_Counter_00 && mapData[y][x] <= Constants::Tile_Counter_65) {
             
-                lavaData[y][x]--;
+                mapData[y][x]--;
 
-                if (lavaData[y][x] == Constants::Tile_Counter_00) {
+                if (mapData[y][x] == Constants::Tile_Counter_00) {
 
-                    lavaData[y][x] = 0;
+                    mapData[y][x] = 0;
 
                 }
 
@@ -377,6 +535,37 @@ void fix_World_Y_Offset() {
             game.setWorld_Y_Offset(3);
             break;
 
+
+    }
+    
+}
+
+void updateGreenDoors() {
+
+    for (uint8_t i = 0; i < Constants::Green_Door_Count; i++) {
+        
+        GreenDoor &greenDoor = game.getGreenDoor(i);
+        greenDoor.setOpen(false);
+
+        if (mapData[game.getPlayer().getY()][game.getPlayer().getX()] == Constants::Tile_Green_Switch) {
+            greenDoor.setOpen(true);
+        }
+        else {
+
+            for (uint8_t j = 0; j < Constants::Block_Count; j++) {
+                
+                Block &block = game.getBlock(j);
+                if (!block.isActive()) break;
+
+                if (mapData[block.getY()][block.getX()] == Constants::Tile_Green_Switch) {
+    
+                    greenDoor.setOpen(true);
+
+                }
+            
+            }
+
+        }
 
     }
     

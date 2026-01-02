@@ -6,6 +6,7 @@
 #include "Block.h"
 #include "Player.h"
 #include "Portal.h"
+#include "GreenDoor.h"
 #include "PortalKey.h"
 
 struct Game {
@@ -19,6 +20,7 @@ struct Game {
         uint16_t frameCount = 0;
         Player player;
         Portal portal;
+        GreenDoor greenDoors[Constants::Green_Door_Count];
 
         Block blocks[Constants::Block_Count];
         PortalKey portalKeys[Constants::Portal_Key_Count];
@@ -35,6 +37,7 @@ struct Game {
         Portal &getPortal()                             { return this->portal; }
         Block &getBlock(uint8_t idx)                    { return this->blocks[idx]; }
         PortalKey &getPortalKey(uint8_t idx)            { return this->portalKeys[idx]; }
+        GreenDoor &getGreenDoor(uint8_t idx)            { return this->greenDoors[idx]; }
 
         void setRandomSeed(uint16_t val)                { this->randomSeed = val; }
         void setFrameCount(uint16_t val)                { this->frameCount = val; }

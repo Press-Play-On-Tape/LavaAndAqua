@@ -5,8 +5,17 @@
 #include "../utils/Enums.h"
 #include "BaseObject.h"
 
-class Block {//} : public BaseObject {
+class GreenDoor {//}: public BaseObject {
 
+    private:
+
+        bool open = false;
+
+    public:
+
+        bool isOpen()                                  { return this->open; }
+    
+        void setOpen(bool val)                         { this->open = val; }
     private:
 
         uint8_t x = 0;
@@ -25,5 +34,4 @@ class Block {//} : public BaseObject {
             return this->x < 255;
         
         }
-
 };

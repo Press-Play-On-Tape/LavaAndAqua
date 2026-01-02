@@ -6,6 +6,7 @@ enum class ObjectType : uint8_t {
     Player,
     Lava, 
     Block,
+    Water, 
 };
 
 // inline CursorPosition &operator++(CursorPosition &c) {
