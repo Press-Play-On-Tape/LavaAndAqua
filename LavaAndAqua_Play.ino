@@ -19,7 +19,7 @@ void play_Init() {
     game.setRandomSeed(r);
     // #endif
 
-    game.setLevel(22);
+    game.setLevel(23);
     loadMap(game.getLevel());
 
 }

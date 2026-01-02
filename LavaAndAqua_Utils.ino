@@ -352,6 +352,22 @@ bool isWalkable(ObjectType objectType, uint8_t x, uint8_t y, int8_t xOffset, int
 
                 }
 
+                // Is the block blocked by a green door?
+
+                for (uint8_t i = 0; i < Constants::Green_Door_Count; i++) {
+
+                    GreenDoor &greenDoor = game.getGreenDoor(i);
+                    
+                    if (!greenDoor.isActive()) break;
+
+                    if (!greenDoor.isOpen() && greenDoor.getX() == x + xOffset && greenDoor.getY() == y + yOffset) {
+
+                        return false;
+
+                    }
+
+                }
+                
             }
 
             return true;
