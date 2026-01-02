@@ -114,6 +114,15 @@ deleteFile(BASE + 'Images.hpp')
 convert_header(IMAGES + 'Titles/PPOT.png',                                          BASE + 'Images.hpp', 'PPOT', 4, 128, 64)
 convert_header(IMAGES + 'Titles/Scoundrel.png',                                     BASE + 'Images.hpp', 'Scoundrel', 4)
 convert_header(IMAGES + 'Tiles.png',                                                BASE + 'Images.hpp', 'Tiles', 4, 8, 8)
+convert_header(IMAGES + 'Titles/ClearProgress.png',                                 BASE + 'Images.hpp', 'ClearProgress', 4)
+
+convert_header(IMAGES + 'Levels_Select.png',                                        BASE + 'Images.hpp', 'Levels_Select', 4, 16, 16)
+convert_header(IMAGES + 'Levels_Cursor.png',                                        BASE + 'Images.hpp', 'Levels_Cursor', 4)
+convert_header(IMAGES + 'Levels_HUD.png',                                           BASE + 'Images.hpp', 'Levels_HUD', 4, 53, 64)
+convert_header(IMAGES + 'Levels_Status.png',                                        BASE + 'Images.hpp', 'Levels_Status', 4, 43, 8)
+convert_header(IMAGES + 'Levels_Number.png',                                        BASE + 'Images.hpp', 'Levels_Number', 4, 11, 8)
+convert_header(IMAGES + 'Levels_NumberOfMoves.png',                                 BASE + 'Images.hpp', 'Levels_NumberOfMoves', 4)
+convert_header(IMAGES + 'Levels_NumberOfMoves_Numbers.png',                         BASE + 'Images.hpp', 'Levels_NumberOfMoves_Numbers', 4, 5, 8)
 
 convert_header(IMAGES + 'Tiles/Lava_01.png',                                        BASE + 'Images.hpp', 'Lava_01', 4, 8, 8)
 convert_header(IMAGES + 'Tiles/Lava_02.png',                                        BASE + 'Images.hpp', 'Lava_02', 4, 16, 8)
@@ -133,8 +142,6 @@ convert_header(IMAGES + 'Tiles/Water_06.png',                                   
 convert_header(IMAGES + 'Tiles/Water_07.png',                                       BASE + 'Images.hpp', 'Water_07', 4, 56, 8)
 convert_header(IMAGES + 'Tiles/Water_08.png',                                       BASE + 'Images.hpp', 'Water_08', 4, 64, 8)
 convert_header(IMAGES + 'Numbers/Numbers_5x3_2D_WB.png',                            BASE + 'Images.hpp', 'Numbers_5x3_2D_WB', 4, 8, 8)
-
-
 
 convert_header(IMAGES + 'Levels/Level_00.png',                                      BASE + 'Images.hpp', 'Level_Img_00', 4)
 convert_header(IMAGES + 'Levels/Level_01.png',                                      BASE + 'Images.hpp', 'Level_Img_01', 4)

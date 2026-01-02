@@ -19,7 +19,7 @@ void play_Init() {
     game.setRandomSeed(r);
     // #endif
 
-    game.setLevel(23);
+    // game.setLevel(23);
     loadMap(game.getLevel());
 
 }
@@ -125,7 +125,7 @@ void play(ArduboyGBase_Config<ABG_Mode::L4_Triplane> &a) {
     uint8_t currentPlane = a.currentPlane();
     if (a.needsUpdate()) play_Update();
 
-    uint24_t levelIdx = FX::readIndexedUInt24(Images::Levels, game.getLevel());
+    uint24_t levelIdx = FX::readIndexedUInt24(Images::Levels_Select, game.getLevel());
     SpritesU::drawOverwriteFX(0, -game.getWorld_Y_Offset() * 8, levelIdx, currentPlane);
 
 

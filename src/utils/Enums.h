@@ -1,6 +1,37 @@
 #pragma once
 
 
+struct LevelSelect {
+
+    uint8_t selectedPuzzle = 0;
+    uint8_t x = 0;
+    uint8_t y = 0;
+    uint8_t aCounter = 0;
+    uint8_t bCounter = 0;
+
+    uint8_t getSelectedPuzzle() {
+
+        return (this->y * 5) + this->x;
+        
+    }
+
+    void increaseGame() {
+
+        this->x++;
+        if (this->x == 5) {
+            this->x = 0;
+            this->y++;
+        }
+
+    }
+
+};
+
+enum PuzzleStatus : uint8_t { 
+    Locked,
+    Complete,
+    InProgress,
+};
 
 enum class ObjectType : uint8_t { 
     Player,
@@ -8,100 +39,6 @@ enum class ObjectType : uint8_t {
     Block,
     Water, 
 };
-
-// inline CursorPosition &operator++(CursorPosition &c) {
-//     c = static_cast<CursorPosition>( static_cast<uint8_t>(c) + 1 );
-//     return c;
-// }
-
-// inline CursorPosition operator++(CursorPosition &c, int) {
-//     CursorPosition result = c;
-//     ++c;
-//     return result;
-// }
-
-// inline CursorPosition &operator--(CursorPosition &c) {
-//     c = static_cast<CursorPosition>( static_cast<uint8_t>(c) - 1 );
-//     return c;
-// }
-
-// inline CursorPosition operator--(CursorPosition &c, int) {
-//     CursorPosition result = c;
-//     --c;
-//     return result;
-// }
-
-enum class Suit : uint8_t { 
-    Spades, 
-    Clubs, 
-    Diamonds, 
-    Hearts, 
-    No_Trumps = 254, 
-    None = 255, 
-};
-
-inline Suit &operator++(Suit &c) {
-    c = static_cast<Suit>( static_cast<uint8_t>(c) + 1 );
-    return c;
-}
-
-inline Suit operator++(Suit &c, int) {
-    Suit result = c;
-    ++c;
-    return result;
-}
-
-
-inline Suit &operator--(Suit &c) {
-    c = static_cast<Suit>( static_cast<uint8_t>(c) - 1 );
-    return c;
-}
-
-inline Suit operator--(Suit &c, int) {
-    Suit result = c;
-    --c;
-    return result;
-}
-
-enum class Rank : uint8_t { 
-    None = 0, 
-    Two = 2, 
-    Three, 
-    Four, 
-    Five, 
-    Six, 
-    Seven, 
-    Eight, 
-    Nine, 
-    Ten, 
-    Jack, 
-    Queen, 
-    King, 
-    Ace, 
-};
-
-inline Rank &operator++(Rank &c) {
-    c = static_cast<Rank>( static_cast<uint8_t>(c) + 1 );
-    return c;
-}
-
-inline Rank operator++(Rank &c, int) {
-    Rank result = c;
-    ++c;
-    return result;
-}
-
-inline Rank &operator--(Rank &c) {
-    c = static_cast<Rank>( static_cast<uint8_t>(c) - 1 );
-    return c;
-}
-
-inline Rank operator--(Rank &c, int) {
-    Rank result = c;
-    --c;
-    return result;
-}
-
 
 enum class GameState : uint8_t {
 
@@ -114,24 +51,15 @@ enum class GameState : uint8_t {
 
     Title_Init,
     Title_Start,
-        Title_OptPlay = Title_Start,
+        Title_Main = Title_Start,
+        Title_Select,
+        Title_Clear_Progress,
     Title_End,
 
     Play_Init,
     Play_Start,
         Play_Shuffle = Play_Start,
         Play_Deal_00, 
-        Play_Deal_01, 
-        Play_Deal_02, 
-        Play_Deal_03, 
-        Play, 
-        Equip,
-        RestoreHealth,
-        BurnCard,
-        ChooseFight,
-        YouWin,
-        YouLose,
-        Score,
         RestartGame,
     Play_End,
     

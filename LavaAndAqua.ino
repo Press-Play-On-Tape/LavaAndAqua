@@ -8,11 +8,11 @@
 #include "src/utils/ArduboyG.h"
 #include "src/utils/Enums.h"
 #include "src/utils/Constants.h"
-#include "src/utils/Utils.h"
 #include "src/entities/Game.h"
 #include "fxdata/fxdata.h"
 #include "fxdata/images/Images.h"
 #include "src/utils/Random.h"
+#include "src/entities/Cookie.h"
 
 #define SPRITESU_OVERWRITE
 #define SPRITESU_PLUSMASK
@@ -28,7 +28,8 @@ decltype(a) a;
 #include <stdlib.h>
 #include "time.h"
 
-Game game;
+Cookie cookie;
+Game &game = cookie.game;
 
 #if not defined(DEBUG) && not defined(DEBUG_BASIC)
 GameState gameState = GameState::SplashScreen_Start;
@@ -38,10 +39,8 @@ GameState gameState = GameState::Title_Init;
 GameState prevGameState = GameState::SplashScreen_Start;
 
 uint8_t titleCounter = 0;
-// uint8_t player_X = 1;
-// uint8_t player_Y = 1;
-// uint8_t portal_X = 1;
-// uint8_t portal_Y = 1;
+LevelSelect levelSelect;
+
 
 void setup() {
 
@@ -53,6 +52,14 @@ void setup() {
     game.setFrameCount(0);
     a.initRandomSeed();
 
+    if (!cookie.isInitialised) {
+
+        cookieReset();
+        cookie.isInitialised = true;
+        saveCookie();
+        
+    }
+    
 }
 
 void loop() {

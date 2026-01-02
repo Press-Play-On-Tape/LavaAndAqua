@@ -16,11 +16,13 @@
 
 namespace Constants {
 
-    const int8_t Bounce[] PROGMEM = { -36, -30, -24, -16, -12, -6, 0, 4, 8, 12, 16, 20, 24, 28, 32, 28, 25, 22, 21, 21, 22, 25, 28, 32, 29, 27, 26, 26, 27, 28, 32, 30, 29, 30, 32, 31, 32 };
+    //const int8_t Bounce[] PROGMEM = { -36, -30, -24, -16, -12, -6, 0, 4, 8, 12, 16, 20, 24, 28, 32, 28, 25, 22, 21, 21, 22, 25, 28, 32, 29, 27, 26, 26, 27, 28, 32, 30, 29, 30, 32, 31, 32 };
     
+    constexpr uint8_t levelSelect_Offset[] = { 0, 2, 6, 21, 36, 42, 54, 55};
+
     constexpr uint8_t Map_X_Count = 16;
     constexpr uint8_t Map_Y_Count = 11;
-
+    constexpr uint8_t Level_Count = 24;
 
     constexpr uint8_t Tile_Lava = 250;
     constexpr uint8_t Tile_Water = 239;

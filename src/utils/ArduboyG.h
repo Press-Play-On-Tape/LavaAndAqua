@@ -295,6 +295,10 @@ struct ArduboyG_Common : public BASE
         return Arduboy2Base::currentButtonState;
     }
 
+    static uint8_t justReleasedButtons(uint8_t button) {
+        return ((Arduboy2Base::previousButtonState & button) && !(Arduboy2Base::currentButtonState & button));
+    }
+    
     static void startGray()
     {
         send_cmds_prog<
