@@ -441,28 +441,28 @@ void incLavaAndWater() {
                 
                 if (game.getMapData(x + 1, y) != Constants::Tile_Lava && game.getMapData(x + 1, y) != Constants::Tile_Lava_And_Partial_Wall && isWalkable(ObjectType::Lava, x, y, 1, 0) && !isPortal(x + 1, y)) { 
                     if (game.getMapData(x + 1, y) == Constants::Tile_Partial_Wall) {
-                        game.setMapData(x - 1, y, Constants::Temp_Lava_And_Partial_Wall);
+                        game.setMapData(x + 1, y, Constants::Temp_Lava_And_Partial_Wall);
                     }
                     else {
-                        game.setMapData(x - 1, y, Constants::Temp_Lava);
+                        game.setMapData(x + 1, y, Constants::Temp_Lava);
                     }
                 }
 
                 if (game.getMapData(x, y - 1) != Constants::Tile_Lava && game.getMapData(x, y - 1) != Constants::Tile_Lava_And_Partial_Wall && isWalkable(ObjectType::Lava, x, y, 0, -1) && !isPortal(x, y - 1)) { 
                     if (game.getMapData(x, y - 1) == Constants::Tile_Partial_Wall) {
-                        game.setMapData(x - 1, y, Constants::Temp_Lava_And_Partial_Wall);
+                        game.setMapData(x, y - 1, Constants::Temp_Lava_And_Partial_Wall);
                     }
                     else {
-                        game.setMapData(x - 1, y, Constants::Temp_Lava);
+                        game.setMapData(x, y - 1, Constants::Temp_Lava);
                     }
                 }
 
                 if (game.getMapData(x, y + 1) != Constants::Tile_Lava && game.getMapData(x, y + 1) != Constants::Tile_Lava_And_Partial_Wall && isWalkable(ObjectType::Lava, x, y, 0, 1) && !isPortal(x, y + 1)) { 
                     if (game.getMapData(x, y + 1) == Constants::Tile_Partial_Wall) {
-                        game.setMapData(x - 1, y, Constants::Temp_Lava_And_Partial_Wall);
+                        game.setMapData(x, y + 1, Constants::Temp_Lava_And_Partial_Wall);
                     }
                     else {
-                        game.setMapData(x - 1, y, Constants::Temp_Lava);
+                        game.setMapData(x, y + 1, Constants::Temp_Lava);
                     }
                 }
 
