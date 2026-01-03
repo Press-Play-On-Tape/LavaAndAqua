@@ -116,6 +116,11 @@ convert_header(IMAGES + 'Titles/Scoundrel.png',                                 
 convert_header(IMAGES + 'Tiles.png',                                                BASE + 'Images.hpp', 'Tiles', 4, 8, 8)
 convert_header(IMAGES + 'Titles/ClearProgress.png',                                 BASE + 'Images.hpp', 'ClearProgress', 4)
 convert_header(IMAGES + 'Titles/Menu.png',                                          BASE + 'Images.hpp', 'Menu', 4, 32, 64)
+convert_header(IMAGES + 'Titles/Title_Top.png',                                     BASE + 'Images.hpp', 'Title_Top', 4)
+convert_header(IMAGES + 'Titles/Title_Bottom.png',                                  BASE + 'Images.hpp', 'Title_Bottom', 4)
+convert_header(IMAGES + 'Titles/Title_Lava.png',                                    BASE + 'Images.hpp', 'Title_Lava', 4)
+convert_header(IMAGES + 'Titles/Title_Amp.png',                                     BASE + 'Images.hpp', 'Title_Amp', 4)
+convert_header(IMAGES + 'Titles/Title_Aqua.png',                                    BASE + 'Images.hpp', 'Title_Aqua', 4)
 
 convert_header(IMAGES + 'Levels_Select.png',                                        BASE + 'Images.hpp', 'Levels_Select', 4, 17, 16)
 convert_header(IMAGES + 'Levels_Cursor.png',                                        BASE + 'Images.hpp', 'Levels_Cursor', 4, 17, 16)
