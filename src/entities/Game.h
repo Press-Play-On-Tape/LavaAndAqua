@@ -12,11 +12,13 @@
 
 struct Game {
 
+    public:
+
+        uint8_t mapData[9][14];
+    
     private:
 
-        uint8_t mapData[11][16];
-        uint8_t prevMapData[Constants::Undo_Count][11][16];
-
+        uint8_t prevMapData[Constants::Undo_Count][9][14];
         uint8_t level = 0;
         uint8_t portalKeyCount = 0;
         uint8_t world_Y_Offset = 0;
@@ -57,12 +59,13 @@ struct Game {
 
         uint8_t getMapData(uint8_t x, uint8_t y) {
         
-            return this->mapData[y][x];
+            if (x == 0 || x == 15 || y == 0 || y == 10) return 255;
+            return this->mapData[y - 1][x - 1];
         }
 
         void setMapData(uint8_t x, uint8_t y, uint8_t val) {
         
-            this->mapData[y][x] = val;
+            this->mapData[y - 1][x - 1] = val;
         }
 
         void resetLevel() {
@@ -80,6 +83,13 @@ struct Game {
                 this->portalKeys[i].setY(15);
 
             }
+            for (uint8_t i = 0; i < Constants::Green_Door_Count; i++) {
+
+                this->greenDoors[i].setX(15);
+                this->greenDoors[i].setY(15);
+
+            }
+
 
         }
 
@@ -108,9 +118,9 @@ struct Game {
 
             for (uint8_t i = 0; i < Constants::Undo_Count - 1; i++) {
 
-                for (uint8_t y = 0; y < Constants::Map_Y_Count; y++) {
+                for (uint8_t y = 0; y < Constants::Map_Y_Count - 2; y++) {
 
-                    for (uint8_t x = 0; x < Constants::Map_X_Count; x++) {
+                    for (uint8_t x = 0; x < Constants::Map_X_Count - 2; x++) {
 
                         this->prevMapData[i][y][x] = this->prevMapData[i + 1][y][x];            
 
@@ -119,11 +129,11 @@ struct Game {
 
             }    
 
-            for (uint8_t y = 0; y < Constants::Map_Y_Count; y++) {
+            for (uint8_t y = 0; y < Constants::Map_Y_Count - 2; y++) {
 
-                for (uint8_t x = 0; x < Constants::Map_X_Count; x++) {
+                for (uint8_t x = 0; x < Constants::Map_X_Count - 2; x++) {
 
-                    this->prevMapData[Constants::Undo_Count - 1][y][x]= this->getMapData(x, y);   
+                    this->prevMapData[Constants::Undo_Count - 1][y][x]= this->mapData[y][x];   
 
                 }
 
@@ -164,9 +174,9 @@ struct Game {
             this->portal.revertMove();
        
 
-            for (uint8_t y = 0; y < Constants::Map_Y_Count; y++) {
+            for (uint8_t y = 0; y < Constants::Map_Y_Count - 2; y++) {
 
-                for (uint8_t x = 0; x < Constants::Map_X_Count; x++) {
+                for (uint8_t x = 0; x < Constants::Map_X_Count - 2; x++) {
 
                     this->mapData[y][x] = this->prevMapData[Constants::Undo_Count - 1][y][x];   
 
@@ -176,9 +186,9 @@ struct Game {
 
             for (uint8_t i = Constants::Undo_Count - 1; i > 0; i--) {
 
-                for (uint8_t y = 0; y < Constants::Map_Y_Count; y++) {
+                for (uint8_t y = 0; y < Constants::Map_Y_Count - 2; y++) {
 
-                    for (uint8_t x = 0; x < Constants::Map_X_Count; x++) {
+                    for (uint8_t x = 0; x < Constants::Map_X_Count - 2; x++) {
 
                         this->prevMapData[i][y][x] = this->prevMapData[i - 1][y][x];            
 
@@ -187,9 +197,9 @@ struct Game {
 
             }    
 
-            for (uint8_t y = 0; y < Constants::Map_Y_Count; y++) {
+            for (uint8_t y = 0; y < Constants::Map_Y_Count - 2; y++) {
 
-                for (uint8_t x = 0; x < Constants::Map_X_Count; x++) {
+                for (uint8_t x = 0; x < Constants::Map_X_Count - 2; x++) {
 
                     this->prevMapData[0][y][x] = 0;   
 
@@ -235,9 +245,9 @@ struct Game {
             {
                 uint24_t levelStart = FX::readIndexedUInt24(Levels::Levels, level);
 
-                for (uint8_t y = 0; y < Constants::Map_Y_Count; y++) {
+                for (uint8_t y = 0; y < Constants::Map_Y_Count - 2; y++) {
                         
-                    FX::seekDataArray(levelStart, y, 0, Constants::Map_X_Count);            
+                    FX::seekDataArray(levelStart, y, 0, Constants::Map_X_Count - 2);            
                     FX::readObject(mapData[y]);
                     FX::readEnd();
 
@@ -253,49 +263,51 @@ struct Game {
 
                 FX::readEnd();
 
+                for (uint8_t y = 1; y < Constants::Map_Y_Count - 1; y++) {
 
-                for (uint8_t y = 0; y < Constants::Map_Y_Count; y++) {
-
-                    for (uint8_t x = 0; x < Constants::Map_X_Count; x++) {
+                    for (uint8_t x = 1; x < Constants::Map_X_Count - 1; x++) {
                             
-                        if (this->getMapData(x, y) == Constants::Tile_Green_Closed) {
-
-                            this->getGreenDoor(greenDoorIdx).setX(x);
-                            this->getGreenDoor(greenDoorIdx).setY(y);
-                            this->setMapData(x, y, 0);
-                            greenDoorIdx++;
-
-                        }
-                        else if (this->getMapData(x, y) == Constants::Tile_Block) {
+                        switch (this->getMapData(x, y)) {
                         
-                            this->getBlock(blockIdx).setX(x);
-                            this->getBlock(blockIdx).setY(y);
-                            this->setMapData(x, y, 0);
-                            blockIdx++;
+                            case Constants::Tile_Green_Closed:
 
-                        }
-                        else if (this->getMapData(x, y) == Constants::Tile_Portal) {
+                                this->getGreenDoor(greenDoorIdx).setX(x);
+                                this->getGreenDoor(greenDoorIdx).setY(y);
+                                this->setMapData(x, y, 0);
+                                greenDoorIdx++;
+                                break;
+
+                            case Constants::Tile_Block:
+                            
+                                this->getBlock(blockIdx).setX(x);
+                                this->getBlock(blockIdx).setY(y);
+                                this->setMapData(x, y, 0);
+                                blockIdx++;
+                                break;
+
+                            case Constants::Tile_Portal:
+
+                                this->getPortal().setX(x);
+                                this->getPortal().setY(y);
+                                this->getPortal().setOpen(true);
+                                this->setMapData(x, y, 0);
+                                break;
+
+                            case Constants::Tile_Portal_Inactive:
+
+                                this->getPortal().setX(x);
+                                this->getPortal().setY(y);
+                                this->getPortal().setOpen(false);
+                                this->setMapData(x, y, 0);
+                                break;
+
+                            case Constants::Tile_Portal_Key:
                         
-                            this->getPortal().setX(x);
-                            this->getPortal().setY(y);
-                            this->getPortal().setOpen(true);
-                            this->setMapData(x, y, 0);
-
-                        }
-                        else if (this->getMapData(x, y) == Constants::Tile_Portal_Inactive) {
-                        
-                            this->getPortal().setX(x);
-                            this->getPortal().setY(y);
-                            this->getPortal().setOpen(false);
-                            this->setMapData(x, y, 0);
-
-                        }
-                        else if (this->getMapData(x, y) == Constants::Tile_Portal_Key) {
-                    
-                            this->getPortalKey(portalKeyIdx).setX(x);
-                            this->getPortalKey(portalKeyIdx).setY(y);
-                            this->setMapData(x, y, 0);
-                            portalKeyIdx++;
+                                this->getPortalKey(portalKeyIdx).setX(x);
+                                this->getPortalKey(portalKeyIdx).setY(y);
+                                this->setMapData(x, y, 0);
+                                portalKeyIdx++;
+                                break;
 
                         }
 
