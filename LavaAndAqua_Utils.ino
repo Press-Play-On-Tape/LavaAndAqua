@@ -405,9 +405,9 @@ bool incLavaAndWater() {
     
     }
 
-    for (uint16_t y = 0; y < Constants::Map_Y_Count; y++) {
+    for (uint8_t y = 0; y < Constants::Map_Y_Count; y++) {
 
-        for (uint16_t x = 0; x < Constants::Map_X_Count; x++) {
+        for (uint8_t x = 0; x < Constants::Map_X_Count; x++) {
 
             uint8_t mp00 = game.getMapData(x, y);
 
