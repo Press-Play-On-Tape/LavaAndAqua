@@ -70,6 +70,7 @@ struct Game {
         void resetLevel() {
 
             this->undoCount= 0;
+            this->player.reset();
 
             for (uint8_t i = 0; i < Constants::Block_Count; i++) {
             

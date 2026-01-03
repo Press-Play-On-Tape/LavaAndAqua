@@ -34,8 +34,8 @@ decltype(a) a;
 Cookie cookie;
 Game &game = cookie.game;
 GameState gameState = GameState::SplashScreen_Start;
-GameState prevGameState = GameState::SplashScreen_Start;
-
+GameState nextGameState = GameState::SplashScreen_Start;
+bool doIncLava = false;
 uint8_t titleCounter = 0;
 LevelSelect levelSelect;
 PopoutMenu popoutMenu;
@@ -89,6 +89,13 @@ void loop() {
             play(a);
             break;
 
+        case GameState::GameOver_Init:
+            gameOver_Init();
+            [[fallthrough]];
+
+        case GameState::GameOver_Main ... GameState::GameOver_Leave:
+            gameOver(a);
+            break;
 
     }
 

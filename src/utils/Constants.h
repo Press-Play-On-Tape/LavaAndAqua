@@ -8,6 +8,8 @@
 
 namespace Constants {
 
+    constexpr int8_t xPos[] = { -125, -112, -101, -90, -80, -70, -61, -52, -44, -36, -29, -22, -16, -10, -5, 0, 4, 8, 12, 15, 18, 20, 22, 23, 24, 24, 25, 25, 25, };
+
     constexpr uint8_t levelSelect_Offset[] = { 0, 0, 14, 31, 43, 43 };
 
     constexpr uint8_t XOffset_Pixels = 6;

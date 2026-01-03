@@ -112,7 +112,6 @@ IMAGES = '../images/'
 deleteFile(BASE + 'Images.hpp')
 
 convert_header(IMAGES + 'Titles/PPOT.png',                                          BASE + 'Images.hpp', 'PPOT', 4, 128, 64)
-convert_header(IMAGES + 'Titles/Scoundrel.png',                                     BASE + 'Images.hpp', 'Scoundrel', 4)
 convert_header(IMAGES + 'Titles/ClearProgress.png',                                 BASE + 'Images.hpp', 'ClearProgress', 4)
 convert_header(IMAGES + 'Titles/Menu.png',                                          BASE + 'Images.hpp', 'Menu', 4, 32, 64)
 convert_header(IMAGES + 'Titles/Title_Top.png',                                     BASE + 'Images.hpp', 'Title_Top', 4)
@@ -120,6 +119,8 @@ convert_header(IMAGES + 'Titles/Title_Bottom.png',                              
 convert_header(IMAGES + 'Titles/Title_Lava.png',                                    BASE + 'Images.hpp', 'Title_Lava', 4)
 convert_header(IMAGES + 'Titles/Title_Amp.png',                                     BASE + 'Images.hpp', 'Title_Amp', 4)
 convert_header(IMAGES + 'Titles/Title_Aqua.png',                                    BASE + 'Images.hpp', 'Title_Aqua', 4)
+convert_header(IMAGES + 'Titles/Title_Good.png',                                    BASE + 'Images.hpp', 'Title_Good', 4)
+convert_header(IMAGES + 'Titles/Title_Work.png',                                    BASE + 'Images.hpp', 'Title_Work', 4)
 
 convert_header(IMAGES + 'Extras/Levels_Select.png',                                 BASE + 'Images.hpp', 'Levels_Select', 4, 17, 16)
 convert_header(IMAGES + 'Extras/Levels_Cursor.png',                                 BASE + 'Images.hpp', 'Levels_Cursor', 4, 17, 16)
@@ -129,6 +130,12 @@ convert_header(IMAGES + 'Extras/Levels_Number.png',                             
 convert_header(IMAGES + 'Extras/Levels_NumberOfMoves.png',                          BASE + 'Images.hpp', 'Levels_NumberOfMoves', 4)
 convert_header(IMAGES + 'Extras/Levels_NumberOfMoves_Numbers.png',                  BASE + 'Images.hpp', 'Levels_NumberOfMoves_Numbers', 4, 5, 8)
 convert_header(IMAGES + 'Extras/Puff.png',                                          BASE + 'Images.hpp', 'Puff', 4, 32, 32)
+
+convert_header(IMAGES + 'Extras/Fade_00.png',                                       BASE + 'Images.hpp', 'Fade_00', 4)
+convert_header(IMAGES + 'Extras/Fade_01.png',                                       BASE + 'Images.hpp', 'Fade_01', 4)
+convert_header(IMAGES + 'Extras/Fade_02.png',                                       BASE + 'Images.hpp', 'Fade_02', 4)
+convert_header(IMAGES + 'Extras/Fade_03.png',                                       BASE + 'Images.hpp', 'Fade_03', 4)
+convert_header(IMAGES + 'Extras/Fade_04.png',                                       BASE + 'Images.hpp', 'Fade_04', 4)
 
 convert_header(IMAGES + 'HUD/Mini_HUD.png',                                         BASE + 'Images.hpp', 'Mini_HUD', 4)
 convert_header(IMAGES + 'HUD/Numbers_HUD.png',                                      BASE + 'Images.hpp', 'Numbers_HUD', 4, 8, 8)

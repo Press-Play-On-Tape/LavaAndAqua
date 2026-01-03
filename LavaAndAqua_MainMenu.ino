@@ -44,10 +44,9 @@ void title_Update() {
             }
 
             if (aReleased && levelSelect.getACounter() < 10) {
-
                 game.setLevel(levelSelect.getSelectedPuzzle());
                 gameState = GameState::Play_Init;
-
+                nextGameState = GameState::Play;
             }
 
             if (pressed & A_BUTTON) {
@@ -65,31 +64,23 @@ void title_Update() {
             }
 
             if (levelSelect.getACounter() > 32 && levelSelect.getBCounter() > 32) {
-                gameState = GameState::Title_Clear_Progress;        
+                gameState = GameState::Title_Clear_Progress;      
             }
 
             if (justPressed & LEFT_BUTTON && levelSelect.getX() > 0) {
-
                 levelSelect.setX(levelSelect.getX() - 1);
-
             }
 
             if (justPressed & RIGHT_BUTTON && levelSelect.getX() < 4 && game.getPuzzle(levelSelect.getSelectedPuzzle() + 1).getStatus() != PuzzleStatus::Locked) {
-
                 levelSelect.setX(levelSelect.getX() + 1);
-
             }
 
             if (justPressed & DOWN_BUTTON && levelSelect.getY() < 7 && game.getPuzzle(levelSelect.getSelectedPuzzle() + 4).getStatus() != PuzzleStatus::Locked) {
-
                 levelSelect.setY(levelSelect.getY() + 1);
-
             }
 
             if (justPressed & UP_BUTTON && levelSelect.getY() > 0) {
-
                 levelSelect.setY(levelSelect.getY() - 1);
-
             }
 
             break;
@@ -122,8 +113,6 @@ void title_Update() {
 
 }
 
-int8_t xPos[] = { -125, -112, -101, -90, -80, -70, -61, -52, -44, -36, -29, -22, -16, -10, -5, 0, 4, 8, 12, 15, 18, 20, 22, 23, 24, 24, 25, 25, 25, };
-
 void title(ArduboyGBase_Config<ABG_Mode::L4_Triplane> &a) {
        
     if (a.needsUpdate()) title_Update();
@@ -146,21 +135,21 @@ void title(ArduboyGBase_Config<ABG_Mode::L4_Triplane> &a) {
             }
 
             if (titleCounter >= 30 && titleCounter < 59) {
-                SpritesU::drawPlusMaskFX(xPos[titleCounter - 30], 1, Images::Title_Lava, currentPlane);
+                SpritesU::drawPlusMaskFX(Constants::xPos[titleCounter - 30], 1, Images::Title_Lava, currentPlane);
             }
             else if (titleCounter >= 59) {
                 SpritesU::drawPlusMaskFX(26, 1, Images::Title_Lava, currentPlane);
             }
 
             if (titleCounter > 30 && titleCounter < 59) {
-                SpritesU::drawPlusMaskFX(-xPos[titleCounter - 30] + 80, 21, Images::Title_Amp, currentPlane);
+                SpritesU::drawPlusMaskFX(-Constants::xPos[titleCounter - 30] + 80, 21, Images::Title_Amp, currentPlane);
             }
             else if (titleCounter >= 59) {
                 SpritesU::drawPlusMaskFX(54, 21, Images::Title_Amp, currentPlane);
             }
 
             if (titleCounter >= 30 && titleCounter < 59) {
-                SpritesU::drawPlusMaskFX(xPos[titleCounter - 30] + 0, 42, Images::Title_Aqua, currentPlane);
+                SpritesU::drawPlusMaskFX(Constants::xPos[titleCounter - 30] + 0, 42, Images::Title_Aqua, currentPlane);
             }
             else if (titleCounter >= 59) {
                 SpritesU::drawPlusMaskFX(26, 42, Images::Title_Aqua, currentPlane);
@@ -176,21 +165,21 @@ void title(ArduboyGBase_Config<ABG_Mode::L4_Triplane> &a) {
                 SpritesU::drawPlusMaskFX(0, 32 + (titleCounter - 10) * 2, Images::Title_Bottom, currentPlane);
 
                 if (titleCounter < 29) {
-                    SpritesU::drawPlusMaskFX(52 - xPos[28 - (titleCounter)], 1, Images::Title_Lava, currentPlane);
+                    SpritesU::drawPlusMaskFX(52 - Constants::xPos[28 - (titleCounter)], 1, Images::Title_Lava, currentPlane);
                 }
                 else {
                     SpritesU::drawPlusMaskFX(26, 1, Images::Title_Lava, currentPlane);
                 }
 
                 if (titleCounter < 29) {
-                    SpritesU::drawPlusMaskFX(27 + xPos[28 - (titleCounter)], 21, Images::Title_Amp, currentPlane);
+                    SpritesU::drawPlusMaskFX(27 + Constants::xPos[28 - (titleCounter)], 21, Images::Title_Amp, currentPlane);
                 }
                 else {
                     SpritesU::drawPlusMaskFX(54, 21, Images::Title_Amp, currentPlane);
                 }
 
                 if (titleCounter < 29) {
-                    SpritesU::drawPlusMaskFX(52 - xPos[28 - (titleCounter)], 42, Images::Title_Aqua, currentPlane);
+                    SpritesU::drawPlusMaskFX(52 - Constants::xPos[28 - (titleCounter)], 42, Images::Title_Aqua, currentPlane);
                 }
                 else {
                     SpritesU::drawPlusMaskFX(26, 42, Images::Title_Aqua, currentPlane);

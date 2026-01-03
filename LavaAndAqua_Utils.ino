@@ -276,7 +276,7 @@ bool isLava(uint8_t x, uint8_t y) {
     
 }
 
-bool incLavaAndWater() {
+void incWater() {
 
     
     // Water first ..
@@ -341,15 +341,28 @@ bool incLavaAndWater() {
     
     }
 
+    for (uint8_t y = 0; y < Constants::Map_Y_Count; y++) {
+
+        for (uint8_t x = 0; x < Constants::Map_X_Count; x++) {
+
+            uint8_t mp00 = game.getMapData(x, y);
+
+            if (mp00 == Constants::Temp_Water)                     { game.setMapData(x, y, Constants::Tile_Water); }
+            if (mp00 == Constants::Temp_Water_And_Partial_Wall)    { game.setMapData(x, y, Constants::Tile_Water_And_Partial_Wall); }
+       
+        }
+    
+    }
+
+}
+
+void incLava() {
 
     for (uint8_t y = 1; y < Constants::Map_Y_Count - 1; y++) {
 
         for (uint8_t x = 1; x < Constants::Map_X_Count - 1; x++) {
 
             uint8_t mp00 = game.getMapData(x, y);
-
-            if (mp00 == Constants::Temp_Water)                     { game.setMapData(x, y, Constants::Tile_Water);                  mp00 = Constants::Tile_Water; }
-            if (mp00 == Constants::Temp_Water_And_Partial_Wall)    { game.setMapData(x, y, Constants::Tile_Water_And_Partial_Wall); mp00 = Constants::Tile_Water_And_Partial_Wall; }
 
             if (mp00 == Constants::Tile_Lava || mp00 == Constants::Tile_Lava_And_Partial_Wall) {
 
@@ -498,15 +511,23 @@ void saveCookie() {
 
 void cookieReset() {
 
-    for (uint8_t i = 0; i < 40; i++) {
+    for (uint8_t i = 0; i < 24; i++) {
 
-        if (i == 0) { //SJH
-        // if (i < 22) { //SJH
-            game.getPuzzle(i).setStatus(PuzzleStatus::InProgress);
+        // if (i == 0) { //SJH
+        // if (i < 23) { //SJH
+        //     game.getPuzzle(i).setStatus(PuzzleStatus::InProgress);
+        //     game.getPuzzle(i).setNumberOfMoves(0);
+        // }
+        // else {
+        //     game.getPuzzle(i).setStatus(PuzzleStatus::Locked);
+        //     game.getPuzzle(i).setNumberOfMoves(0);
+        // }
+        if (i > 1) { //SJH
+            game.getPuzzle(i).setStatus(PuzzleStatus::Complete);
             game.getPuzzle(i).setNumberOfMoves(0);
         }
         else {
-            game.getPuzzle(i).setStatus(PuzzleStatus::Locked);
+            game.getPuzzle(i).setStatus(PuzzleStatus::InProgress);
             game.getPuzzle(i).setNumberOfMoves(0);
         }
 

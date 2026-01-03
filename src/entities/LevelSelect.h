@@ -36,6 +36,7 @@ struct LevelSelect {
         void increaseGame() {
 
             this->x++;
+
             if (this->x == 5) {
                 this->x = 0;
                 this->y++;
