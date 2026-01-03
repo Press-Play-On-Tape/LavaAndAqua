@@ -31,7 +31,7 @@ void title_Update() {
 
                 a.initRandomSeed(); 
                 gameState = GameState::Title_Select;
-                levelSelect.aCounter = 11;
+                levelSelect.setACounter(11);
                 titleCounter = 0;
 
             }
@@ -39,58 +39,56 @@ void title_Update() {
 
         case GameState::Title_Select:
 
-            if (bReleased && levelSelect.bCounter < 10) {
+            if (bReleased && levelSelect.getBCounter() < 10) {
                 gameState = GameState::Title_Init;
             }
 
-            if (aReleased && levelSelect.aCounter < 10) {
+            if (aReleased && levelSelect.getACounter() < 10) {
 
                 game.setLevel(levelSelect.getSelectedPuzzle());
-                // numberOfMoves = game.getPuzzle(game.getLevel()).getNumberOfMoves();
-                // game.getPuzzle(game.getLevel()).setNumberOfMoves(0);
                 gameState = GameState::Play_Init;
 
             }
 
             if (pressed & A_BUTTON) {
-                levelSelect.aCounter++;
+                levelSelect.incACounter();
             }
             else {
-                levelSelect.aCounter = 0;
+                levelSelect.setACounter(0);
             }
 
             if (pressed & B_BUTTON) {
-                levelSelect.bCounter++;
+                levelSelect.incBCounter();
             }
             else {
-                levelSelect.bCounter = 0;
+                levelSelect.setBCounter(0);
             }
 
-            if (levelSelect.aCounter > 32 && levelSelect.bCounter > 32) {
+            if (levelSelect.getACounter() > 32 && levelSelect.getBCounter() > 32) {
                 gameState = GameState::Title_Clear_Progress;        
             }
 
-            if (justPressed & LEFT_BUTTON && levelSelect.x > 0) {
+            if (justPressed & LEFT_BUTTON && levelSelect.getX() > 0) {
 
-                levelSelect.x--;
-
-            }
-
-            if (justPressed & RIGHT_BUTTON && levelSelect.x < 4 && game.getPuzzle(levelSelect.getSelectedPuzzle() + 1).getStatus() != PuzzleStatus::Locked) {
-
-                levelSelect.x++;
+                levelSelect.setX(levelSelect.getX() - 1);
 
             }
 
-            if (justPressed & DOWN_BUTTON && levelSelect.y < 7 && game.getPuzzle(levelSelect.getSelectedPuzzle() + 4).getStatus() != PuzzleStatus::Locked) {
+            if (justPressed & RIGHT_BUTTON && levelSelect.getX() < 4 && game.getPuzzle(levelSelect.getSelectedPuzzle() + 1).getStatus() != PuzzleStatus::Locked) {
 
-                levelSelect.y++;
+                levelSelect.setX(levelSelect.getX() + 1);
 
             }
 
-            if (justPressed & UP_BUTTON && levelSelect.y > 0) {
+            if (justPressed & DOWN_BUTTON && levelSelect.getY() < 7 && game.getPuzzle(levelSelect.getSelectedPuzzle() + 4).getStatus() != PuzzleStatus::Locked) {
 
-                levelSelect.y--;
+                levelSelect.setY(levelSelect.getY() + 1);
+
+            }
+
+            if (justPressed & UP_BUTTON && levelSelect.getY() > 0) {
+
+                levelSelect.setY(levelSelect.getY() - 1);
 
             }
 
@@ -102,8 +100,8 @@ void title_Update() {
 
                 cookieReset();
                 saveCookie();
-                levelSelect.aCounter = 11;
-                levelSelect.bCounter = 11;   
+                levelSelect.setACounter(11);
+                levelSelect.setBCounter(11);   
                 gameState = GameState::Title_Select;
 
             }
@@ -131,7 +129,7 @@ void title(ArduboyGBase_Config<ABG_Mode::L4_Triplane> &a) {
     if (a.needsUpdate()) title_Update();
 
     uint8_t currentPlane = a.currentPlane();
-    uint8_t yOffset = Constants::levelSelect_Offset[levelSelect.y];
+    uint8_t yOffset = Constants::levelSelect_Offset[levelSelect.getY()];
 
     switch (gameState) {
 
@@ -172,29 +170,27 @@ void title(ArduboyGBase_Config<ABG_Mode::L4_Triplane> &a) {
 
         case GameState::Title_Select:
 
-            if (titleCounter < 35) {
+            if (titleCounter < 29) {
 
-                if (titleCounter < 35) {
-                    SpritesU::drawPlusMaskFX(0, - 20 - (titleCounter - 10) * 2, Images::Title_Top, currentPlane);
-                    SpritesU::drawPlusMaskFX(0, 32 + (titleCounter - 10) * 2, Images::Title_Bottom, currentPlane);
-                }
+                SpritesU::drawPlusMaskFX(0, - 20 - (titleCounter - 10) * 2, Images::Title_Top, currentPlane);
+                SpritesU::drawPlusMaskFX(0, 32 + (titleCounter - 10) * 2, Images::Title_Bottom, currentPlane);
 
-                if (titleCounter >= 10 && titleCounter < 39) {
-                    SpritesU::drawPlusMaskFX(52 - xPos[28 - (titleCounter - 10)], 1, Images::Title_Lava, currentPlane);
+                if (titleCounter < 29) {
+                    SpritesU::drawPlusMaskFX(52 - xPos[28 - (titleCounter)], 1, Images::Title_Lava, currentPlane);
                 }
                 else {
                     SpritesU::drawPlusMaskFX(26, 1, Images::Title_Lava, currentPlane);
                 }
 
-                if (titleCounter > 10 && titleCounter < 39) {
-                    SpritesU::drawPlusMaskFX(26 + xPos[28 - (titleCounter - 10)], 21, Images::Title_Amp, currentPlane);
+                if (titleCounter < 29) {
+                    SpritesU::drawPlusMaskFX(27 + xPos[28 - (titleCounter)], 21, Images::Title_Amp, currentPlane);
                 }
                 else {
                     SpritesU::drawPlusMaskFX(54, 21, Images::Title_Amp, currentPlane);
                 }
 
-                if (titleCounter >= 10 && titleCounter < 39) {
-                    SpritesU::drawPlusMaskFX(52 - xPos[28 - (titleCounter - 10)], 42, Images::Title_Aqua, currentPlane);
+                if (titleCounter < 29) {
+                    SpritesU::drawPlusMaskFX(52 - xPos[28 - (titleCounter)], 42, Images::Title_Aqua, currentPlane);
                 }
                 else {
                     SpritesU::drawPlusMaskFX(26, 42, Images::Title_Aqua, currentPlane);
@@ -237,7 +233,7 @@ void title(ArduboyGBase_Config<ABG_Mode::L4_Triplane> &a) {
                     
                 }
 
-                SpritesU::drawOverwriteFX(128 - 53, 0, Images::Levels_HUD, (levelSelect.y * 3) + currentPlane);
+                SpritesU::drawOverwriteFX(128 - 53, 0, Images::Levels_HUD, (levelSelect.getY() * 3) + currentPlane);
                 SpritesU::drawOverwriteFX(128 - 53 + 40, 2, Images::Levels_Number, (levelSelect.getSelectedPuzzle() * 3) + currentPlane);
                 SpritesU::drawOverwriteFX(128 - 53 + 9, 17, Images::Levels_Status, (static_cast<uint8_t>(game.getPuzzle(levelSelect.getSelectedPuzzle()).getStatus()) * 3) + currentPlane);
 

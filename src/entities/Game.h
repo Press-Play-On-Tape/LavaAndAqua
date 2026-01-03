@@ -18,10 +18,11 @@ struct Game {
         uint8_t prevMapData[Constants::Undo_Count][9][14];
         uint8_t level = 0;
         uint8_t portalKeyCount = 0;
-        uint8_t world_Y_Offset = 0;
+        int8_t world_Y_Offset = 0;
         uint16_t frameCount = 0;
         uint16_t moveCount = 0;
         uint8_t undoCount = 0;
+        bool preventScrolling = false;
 
         Player player;
         Portal portal;
@@ -35,11 +36,12 @@ struct Game {
 
         uint16_t getFrameCount()                        { return this->frameCount; }
         uint16_t getFrameCount(uint8_t val)             { return this->frameCount % val < val / 2; }
-        uint8_t getWorld_Y_Offset()                     { return this->world_Y_Offset; }
+        int8_t getWorld_Y_Offset()                      { return this->world_Y_Offset; }
         uint8_t getLevel()                              { return this->level; }
         uint8_t getPortalKeyCount()                     { return this->portalKeyCount; }
         uint8_t getUndoCount()                          { return this->undoCount; }
         uint16_t getMoveCount()                         { return this->moveCount; }
+        bool getPreventScrolling()                      { return this->preventScrolling; }
 
         Player &getPlayer()                             { return this->player; }
         Portal &getPortal()                             { return this->portal; }
@@ -66,7 +68,9 @@ struct Game {
         }
 
         void resetLevel() {
-        
+
+            this->undoCount= 0;
+
             for (uint8_t i = 0; i < Constants::Block_Count; i++) {
             
                 this->blocks[i].setX(15);
@@ -136,13 +140,6 @@ struct Game {
 
             }
 
-            for (uint8_t i = 0; i < Constants::Block_Count; i++) {
-            
-                Block &block = this->blocks[i];
-                block.captureMove();
-
-            }
-            
             for (uint8_t i = 0; i < Constants::Green_Door_Count; i++) {
             
                 GreenDoor &greenDoor = this->greenDoors[i];
@@ -157,9 +154,16 @@ struct Game {
 
             }
 
+            for (uint8_t i = 0; i < Constants::Block_Count; i++) {
+            
+                Block &block = this->blocks[i];
+                block.captureMove();
+
+            }
+
             this->moveCount++;
             if (this->undoCount < Constants::Undo_Count) this->undoCount++;
-
+  
         }
 
         void revertMove() {
@@ -219,12 +223,18 @@ struct Game {
 
             }
 
+            uint8_t keyCount = 0;
+
             for (uint8_t i = 0; i < Constants::Portal_Key_Count; i++) {
             
                 PortalKey &portalKey = this->portalKeys[i];
                 portalKey.revertMove();
 
+                if (portalKey.isActive()) keyCount++;
+
             }
+
+            this->portalKeyCount = keyCount;
 
             this->undoCount--;
 
@@ -249,16 +259,6 @@ struct Game {
                     FX::readEnd();
 
                 }
-
-
-                levelStart = FX::readIndexedUInt24(Levels::Level_Details, level);
-
-                FX::seekData(levelStart);
-                this->setWorld_Y_Offset(FX::readPendingUInt8());
-                this->getPlayer().setX(FX::readPendingUInt8());
-                this->getPlayer().setY(FX::readPendingUInt8());
-
-                FX::readEnd();
 
                 for (uint8_t y = 1; y < Constants::Map_Y_Count - 1; y++) {
 
@@ -304,6 +304,13 @@ struct Game {
                                 this->getPortalKey(portalKeyIdx).setY(y);
                                 this->setMapData(x, y, 0);
                                 portalKeyIdx++;
+                                break;
+
+                            case Constants::Tile_Player:
+                        
+                                this->getPlayer().setX(x);
+                                this->getPlayer().setY(y);
+                                this->setMapData(x, y, 0);
                                 break;
 
                         }

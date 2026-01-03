@@ -53,31 +53,4 @@ namespace Levels
         Level_23,
     };
     
-    uint24_t Level_Details[] = {
-        Level_00_Details,
-        Level_01_Details,
-        Level_02_Details,
-        Level_03_Details,
-        Level_04_Details,
-        Level_05_Details,
-        Level_06_Details,
-        Level_07_Details,
-        Level_08_Details,
-        Level_09_Details,
-        Level_10_Details,
-        Level_11_Details,
-        Level_12_Details,
-        Level_13_Details,
-        Level_14_Details,
-        Level_15_Details,
-        Level_16_Details,
-        Level_17_Details,
-        Level_18_Details,
-        Level_19_Details,
-        Level_20_Details,
-        Level_21_Details,
-        Level_22_Details,
-        Level_23_Details,        
-    };
-
 namespace_end

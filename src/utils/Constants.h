@@ -18,6 +18,7 @@ namespace Constants {
     constexpr uint8_t Map_Y_Count = 11;
     constexpr uint8_t Level_Count = 24;
 
+    constexpr uint8_t Tile_Player = 234;
     constexpr uint8_t Tile_Lava = 250;
     constexpr uint8_t Tile_Water = 239;
     constexpr uint8_t Tile_Basalt = 240;
@@ -47,6 +48,7 @@ namespace Constants {
     constexpr uint8_t Image_Water_And_Partial_Wall = 16;
     constexpr uint8_t Image_Block = 15;
     constexpr uint8_t Image_Player = 14;
+    constexpr uint8_t Image_Player_Dead = 25;
     constexpr uint8_t Image_Basalt = 20;
     constexpr uint8_t Image_Waters_Edge = 21;
     constexpr uint8_t Image_Green_Switch = 22;

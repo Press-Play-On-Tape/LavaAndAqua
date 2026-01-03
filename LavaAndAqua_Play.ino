@@ -5,12 +5,62 @@
 void play_Init() { 
 
     game.setMoveCount(0);
-    gameState = GameState::Play_Shuffle;
+    gameState = GameState::Play;
 
     game.loadMap(game.getLevel());
-    menuSelect = 0;
-    menuX = 128;
-    menuDirection = Direction::None;
+    popoutMenu.setSelect(0);
+    popoutMenu.setX(128);
+    popoutMenu.setDirection(Direction::None);
+    fix_World_Y_Offset();
+    clearBlocks();
+
+}
+
+void handleMenu(uint8_t justPressed) {
+
+    if (justPressed & UP_BUTTON) {
+
+        if (popoutMenu.getSelect() >= (game.getUndoCount() == 0 ? 2 : 1)) {
+            popoutMenu.setSelect(popoutMenu.getSelect() - 1);
+        }
+
+    }
+
+    else if (justPressed & DOWN_BUTTON) {
+
+        if (popoutMenu.getSelect() < 2) {
+            popoutMenu.setSelect(popoutMenu.getSelect() + 1);
+        }
+
+    }
+
+    else if (justPressed & A_BUTTON) {
+
+        puff.setCounter(0);
+
+        switch (popoutMenu.getSelect()) {
+        
+            case 0:
+                game.revertMove();
+                popoutMenu.setAllowClose(true);
+                if (game.getUndoCount() == 0) {
+                    popoutMenu.setDirection(Direction::Right);
+                }
+                break;
+        
+            case 1:
+                popoutMenu.setAllowClose(true);
+                gameState = GameState::Play_Init;
+                break;
+        
+            case 2:
+                popoutMenu.setAllowClose(true);
+                gameState = GameState::Title_Init;
+                break;
+                
+        }
+
+    }
 
 }
 
@@ -25,126 +75,159 @@ void play_Update() {
 
     game.incFrameCount();
 
-    if (menuX == 128) {
-        
-        if (pressed & B_BUTTON && justPressed & DOWN_BUTTON && game.getWorld_Y_Offset() < 3) {
-            game.setWorld_Y_Offset(game.getWorld_Y_Offset() + 1);
-        }
+    if (puff.getCounter() == 0) {
 
-        else if (pressed & B_BUTTON && justPressed & UP_BUTTON && game.getWorld_Y_Offset() > 0) {
-            game.setWorld_Y_Offset(game.getWorld_Y_Offset() - 1);
-        }
-
-        else if (justPressed & LEFT_BUTTON && isWalkable(ObjectType::Player, -1, 0)) {
-            game.captureMove();
-            game.getPlayer().decX();
-            updateGreenDoors();
-            incLavaAndWater();
-        }
-
-        else if (justPressed & RIGHT_BUTTON && isWalkable(ObjectType::Player, 1, 0)) {
-            game.captureMove();
-            game.getPlayer().incX();
-            updateGreenDoors();
-            incLavaAndWater();
-        }
-
-        else if (justPressed & UP_BUTTON && isWalkable(ObjectType::Player, 0, -1)) {
-            game.captureMove();
-            game.getPlayer().decY();
-            updateGreenDoors();
-            incLavaAndWater();
-            fix_World_Y_Offset();
-
-        }
-
-        else if (justPressed & DOWN_BUTTON && isWalkable(ObjectType::Player, 0, 1)) {
-            game.captureMove();
-            game.getPlayer().incY();
-            updateGreenDoors();
-            incLavaAndWater();
-            fix_World_Y_Offset();
-
-        }
-
-
-    }
-    else {
-
-        if (justPressed & UP_BUTTON) {
-
-            if (menuSelect > game.getUndoCount() == 0 ? 2 : 1) {
-                menuSelect--;    
+        if (popoutMenu.getX() == 128) {
+            
+            if (justPressed & LEFT_BUTTON && isWalkable(ObjectType::Player, -1, 0)) {
+                game.captureMove();
+                game.getPlayer().decX();
+                updateBlocks();
+                updateGreenDoors();
+                incLavaAndWater();
             }
 
-        }
-
-        else if (justPressed & DOWN_BUTTON) {
-
-            if (menuSelect < 2) {
-                menuSelect++;    
+            else if (justPressed & RIGHT_BUTTON && isWalkable(ObjectType::Player, 1, 0)) {
+                game.captureMove();
+                game.getPlayer().incX();
+                updateBlocks();
+                updateGreenDoors();
+                incLavaAndWater();
             }
 
-        }
+            else if (justPressed & UP_BUTTON && isWalkable(ObjectType::Player, 0, -1)) {
+                game.captureMove();
+                game.getPlayer().decY();
+                updateBlocks();
+                updateGreenDoors();
+                incLavaAndWater();
+                fix_World_Y_Offset();
 
-        else if (justPressed & A_BUTTON) {
+            }
 
-            switch (menuSelect) {
+            else if (justPressed & DOWN_BUTTON && isWalkable(ObjectType::Player, 0, 1)) {
+                game.captureMove();
+                game.getPlayer().incY();
+                updateBlocks();
+                updateGreenDoors();
+                incLavaAndWater();
+                fix_World_Y_Offset();
+
+            }
+
+
+
+            // ---------------------------------------------------------------------
+            // Have we won?
+            // ---------------------------------------------------------------------
+
+            if (game.getPortalKeyCount() == 0 && game.getPlayer().getX() == game.getPortal().getX() && game.getPlayer().getY() == game.getPortal().getY()) {
+
             
-                case 0:
-                    game.revertMove();
-                    if (game.getUndoCount() == 0) {
-                        menuDirection = Direction::Right;
-                    }
-                    break;
-            
-                case 1:
+                game.getPuzzle(game.getLevel()).setStatus(PuzzleStatus::Complete);
+                game.getPuzzle(game.getLevel()).setNumberOfMoves(game.getMoveCount());
+                
+                if (game.getLevel() < Constants::Level_Count - 1 && game.getPuzzle(game.getLevel() + 1).getStatus() == PuzzleStatus::Locked) {
+
+                    game.getPuzzle(game.getLevel() + 1).setStatus(PuzzleStatus::InProgress);
+                    game.setLevel(game.getLevel() + 1);
                     gameState = GameState::Play_Init;
-                    break;
-            
-                case 2:
-                    gameState = GameState::Title_Init;
-                    break;
-                    
+                    levelSelect.increaseGame();
+
+                }
+                else {
+
+                    gameState = GameState::Title_Select;
+
+                }
+
+                saveCookie();
+
             }
+
+
+            // ---------------------------------------------------------------------
+            // Have we lost?
+            // ---------------------------------------------------------------------
+
+            if (isLava(game.getPlayer().getX() , game.getPlayer().getY())) {
+            
+                puff.setCounter(1);
+                puff.setX(game.getPlayer().getX());
+                puff.setY(game.getPlayer().getY());
+
+            }
+
+
+            // ---------------------------------------------------------------------
+            // Portal Key
+            // ---------------------------------------------------------------------
+
+            for (uint8_t i = 0; i < Constants::Portal_Key_Count; i++) {
+                
+                if (game.getPlayer().getX() == game.getPortalKey(i).getX() && game.getPlayer().getY() == game.getPortalKey(i).getY()) {
+                
+                    game.decPortalKeyCount();
+                    game.getPortalKey(i).setY(15);
+                    game.getPortalKey(i).setY(15);
+
+                    if (game.getPortalKeyCount() == 0) {
+                    
+                        game.getPortal().setOpen(true);
+                        
+                    }
+
+                }
+            
+            }
+
+        }
+        else {
+
+            handleMenu(justPressed);
 
         }
 
     }
+    else if (puff.getCounter() == 10) {
+        
+        handleMenu(justPressed);
+
+    }
 
         
-    // Menu ..
+    // Open menu ..
 
     if (justPressed & B_BUTTON) {
                 
-        if (menuX == 128) {
-            menuDirection = Direction::Left;
-            menuSelect = game.getUndoCount() == 0 ? 1 : 0; 
+        if (popoutMenu.getX() == 128) {
+            popoutMenu.setDirection(Direction::Left);
+            popoutMenu.setSelect(game.getUndoCount() == 0 ? 1 : 0); 
         }
-        else if (menuX == 128 - 32) {
-            menuDirection = Direction::Right;
+        else if (popoutMenu.getX() == 128 - 32 && popoutMenu.getAllowClose()) {
+            popoutMenu.setDirection(Direction::Right);
         }
         
     }
 
-    switch (menuDirection) {
+    switch (popoutMenu.getDirection()) {
     
         case Direction::Left:
 
-            menuX = menuX - 2;
+            popoutMenu.setX(popoutMenu.getX() - 2);
 
-            if (menuX == 128 - 32) {
-                menuDirection = Direction::None;
+            if (popoutMenu.getX() == 128 - 32) {
+                popoutMenu.setDirection(Direction::None);
             }
 
             break;
     
         case Direction::Right:
 
-            menuX = menuX + 2;
+            popoutMenu.setX(popoutMenu.getX() + 2);
 
-            if (menuX == 128) {
-                menuDirection = Direction::None;
+            if (popoutMenu.getX() == 128) {
+                popoutMenu.setDirection(Direction::None);
             }
 
             break;
@@ -152,69 +235,29 @@ void play_Update() {
     }
 
 
-    // ---------------------------------------------------------------------
-    // Have we won?
-    // ---------------------------------------------------------------------
+    if (puff.getCounter() > 0 && game.getFrameCount() % 4 == 0) {
 
-    if (game.getPlayer().getX() == game.getPortal().getX() && game.getPlayer().getY() == game.getPortal().getY()) {
-    
-        // Serial.println("Level Complete");
-       
-        game.getPuzzle(game.getLevel()).setStatus(PuzzleStatus::Complete);
-        game.getPuzzle(game.getLevel()).setNumberOfMoves(game.getMoveCount());
+        if (puff.getCounter() <10) {
+
+            puff.setCounter(puff.getCounter() + 1);
         
-        if (game.getLevel() < Constants::Level_Count - 1 && game.getPuzzle(game.getLevel() + 1).getStatus() == PuzzleStatus::Locked) {
-
-            game.getPuzzle(game.getLevel() + 1).setStatus(PuzzleStatus::InProgress);
-            game.setLevel(game.getLevel() + 1);
-            gameState = GameState::Play_Init;
-            levelSelect.increaseGame();
-
-        }
-        else {
-
-            gameState = GameState::Title_Select;
-
         }
 
-        saveCookie();
-
-    }
-
-
-    // ---------------------------------------------------------------------
-    // Have we lost?
-    // ---------------------------------------------------------------------
-
-    if (isLava(game.getPlayer().getX() , game.getPlayer().getY())) {
-    
-        // Serial.println("Dead!");
-
-    }
-
-
-    // ---------------------------------------------------------------------
-    // Portal Key
-    // ---------------------------------------------------------------------
-
-    for (uint8_t i = 0; i < Constants::Portal_Key_Count; i++) {
+        switch (puff.getCounter()) {
         
-        if (game.getPlayer().getX() == game.getPortalKey(i).getX() && game.getPlayer().getY() == game.getPortalKey(i).getY()) {
-        
-            game.decPortalKeyCount();
-            game.getPortalKey(i).setY(15);
-            game.getPortalKey(i).setY(15);
-
-            if (game.getPortalKeyCount() == 0) {
-            
-                game.getPortal().setOpen(true);
+            case 4:
                 
-            }
+                break;
+
+            case 9:
+
+                popoutMenu.setDirection(Direction::Left);
+                popoutMenu.setAllowClose(false);
+                break;
 
         }
-    
-    }
 
+    }
 
 }
 
@@ -225,24 +268,25 @@ void play(ArduboyGBase_Config<ABG_Mode::L4_Triplane> &a) {
     if (a.needsUpdate()) play_Update();
 
     uint24_t levelIdx = FX::readIndexedUInt24(Images::Level_Images, game.getLevel());
-    SpritesU::drawOverwriteFX(0, - game.getWorld_Y_Offset() * 8, levelIdx, currentPlane);
+    SpritesU::drawOverwriteFX(0, - game.getWorld_Y_Offset(), levelIdx, currentPlane);
 
     SpritesU::drawOverwriteFX(120, 0, Images::Mini_HUD, currentPlane);
     SpritesU::drawOverwriteFX(121, 17, Images::Numbers_HUD, ((game.getLevel() + 1) * 3) + currentPlane);
     SpritesU::drawOverwriteFX(121, 50, Images::Numbers_HUD, ((game.getMoveCount() / 10) * 3) + currentPlane);
     SpritesU::drawOverwriteFX(121, 54, Images::Numbers_HUD, ((game.getMoveCount() % 100) * 3) + currentPlane);
 
-    for (uint8_t y = game.getWorld_Y_Offset(); y < Constants::Map_Y_Count; y++) {
+    for (uint8_t y = 0; y < Constants::Map_Y_Count; y++) {
 
-        int8_t yPos = ((y - game.getWorld_Y_Offset()) * 8) - Constants::YOffset_Pixels;
+        int8_t yPos = (y * 8) - game.getWorld_Y_Offset() - Constants::YOffset_Pixels;
 
         if (yPos > 63) continue;
+        if (yPos < -7) continue;
 
         for (uint8_t x = 0; x < Constants::Map_X_Count; x++) {
 
             int8_t xPos = (x * 8) - Constants::XOffset_Pixels;
 
-            if (xPos + 8 > menuX) continue;
+            if (xPos > popoutMenu.getX() - 8) continue;
 
             if (game.getMapData(x, y) >= Constants::Tile_Counter_00 && game.getMapData(x, y) <= Constants::Tile_Counter_65) {
 
@@ -338,7 +382,7 @@ void play(ArduboyGBase_Config<ABG_Mode::L4_Triplane> &a) {
         Block &block = game.getBlock(i);
 
         if (block.isActive()) {
-            SpritesU::drawPlusMaskFX((block.getX() * 8) - Constants::XOffset_Pixels, ((block.getY() - game.getWorld_Y_Offset()) * 8) - Constants::YOffset_Pixels, Images::Tiles, (Constants::Image_Block * 3) + currentPlane);
+            SpritesU::drawPlusMaskFX((block.getX() * 8) - Constants::XOffset_Pixels, (block.getY() * 8) - game.getWorld_Y_Offset() - Constants::YOffset_Pixels, Images::Tiles, (Constants::Image_Block * 3) + currentPlane);
         }
         else {
             break;
@@ -354,7 +398,7 @@ void play(ArduboyGBase_Config<ABG_Mode::L4_Triplane> &a) {
         PortalKey &key = game.getPortalKey(i);
 
         if (key.isActive()) {
-            SpritesU::drawPlusMaskFX((key.getX() * 8) - Constants::XOffset_Pixels, ((key.getY() - game.getWorld_Y_Offset()) * 8) - Constants::YOffset_Pixels, Images::Tiles, ((5 + ((game.getFrameCount() % 36) / 12)) * 3) + currentPlane);
+            SpritesU::drawPlusMaskFX((key.getX() * 8) - Constants::XOffset_Pixels, ((key.getY() * 8) - game.getWorld_Y_Offset()) - Constants::YOffset_Pixels, Images::Tiles, ((5 + ((game.getFrameCount() % 36) / 12)) * 3) + currentPlane);
         }
 
     }
@@ -372,10 +416,10 @@ void play(ArduboyGBase_Config<ABG_Mode::L4_Triplane> &a) {
             if (greenDoor.isActive()) {
 
                 if (greenDoor.isOpen()) {
-                    SpritesU::drawPlusMaskFX((greenDoor.getX() * 8) - Constants::XOffset_Pixels, ((greenDoor.getY() - game.getWorld_Y_Offset()) * 8) - Constants::YOffset_Pixels, Images::Tiles, (Constants::Image_Green_Open * 3) + currentPlane);
+                    SpritesU::drawPlusMaskFX((greenDoor.getX() * 8) - Constants::XOffset_Pixels, ((greenDoor.getY() * 8) - game.getWorld_Y_Offset()) - Constants::YOffset_Pixels, Images::Tiles, (Constants::Image_Green_Open * 3) + currentPlane);
                 }
                 else {
-                    SpritesU::drawPlusMaskFX((greenDoor.getX() * 8) - Constants::XOffset_Pixels, ((greenDoor.getY() - game.getWorld_Y_Offset()) * 8) - Constants::YOffset_Pixels, Images::Tiles, (Constants::Image_Green_Closed * 3) + currentPlane);
+                    SpritesU::drawPlusMaskFX((greenDoor.getX() * 8) - Constants::XOffset_Pixels, ((greenDoor.getY() * 8) - game.getWorld_Y_Offset()) - Constants::YOffset_Pixels, Images::Tiles, (Constants::Image_Green_Closed * 3) + currentPlane);
                 }
 
             }
@@ -389,22 +433,31 @@ void play(ArduboyGBase_Config<ABG_Mode::L4_Triplane> &a) {
 
     if (game.getPortal().isOpen()) {
 
-        SpritesU::drawPlusMaskFX((game.getPortal().getX() * 8) - Constants::XOffset_Pixels, ((game.getPortal().getY() - game.getWorld_Y_Offset()) * 8) - Constants::YOffset_Pixels, Images::Tiles, ((Constants::Image_Portal + ((game.getFrameCount() % 40) / 8)) * 3) + currentPlane);
+        SpritesU::drawPlusMaskFX((game.getPortal().getX() * 8) - Constants::XOffset_Pixels, ((game.getPortal().getY() * 8) - game.getWorld_Y_Offset()) - Constants::YOffset_Pixels, Images::Tiles, ((Constants::Image_Portal + ((game.getFrameCount() % 40) / 8)) * 3) + currentPlane);
     }
     else {
 
-        SpritesU::drawPlusMaskFX((game.getPortal().getX() * 8) - Constants::XOffset_Pixels, ((game.getPortal().getY() - game.getWorld_Y_Offset()) * 8) - Constants::YOffset_Pixels, Images::Tiles, (Constants::Image_Portal_Inactive * 3) + currentPlane);
+        SpritesU::drawPlusMaskFX((game.getPortal().getX() * 8) - Constants::XOffset_Pixels, ((game.getPortal().getY() * 8) - game.getWorld_Y_Offset()) - Constants::YOffset_Pixels, Images::Tiles, (Constants::Image_Portal_Inactive * 3) + currentPlane);
 
     }
 
 
     // Player ..
 
-    SpritesU::drawPlusMaskFX((game.getPlayer().getX() * 8) - Constants::XOffset_Pixels, ((game.getPlayer().getY() - game.getWorld_Y_Offset()) * 8) - Constants::YOffset_Pixels, Images::Tiles, (Constants::Image_Player * 3) + currentPlane);
 
+    if (puff.getCounter() > 5) {
+        SpritesU::drawPlusMaskFX((game.getPlayer().getX() * 8) - Constants::XOffset_Pixels, ((game.getPlayer().getY() * 8) - game.getWorld_Y_Offset()) - Constants::YOffset_Pixels, Images::Tiles, (Constants::Image_Player_Dead * 3) + currentPlane);
+    }
+    else {
+        SpritesU::drawPlusMaskFX((game.getPlayer().getX() * 8) - Constants::XOffset_Pixels, ((game.getPlayer().getY() * 8) - game.getWorld_Y_Offset()) - Constants::YOffset_Pixels, Images::Tiles, (Constants::Image_Player * 3) + currentPlane);
+    }
 
-    if (menuX < 128) {
-        SpritesU::drawOverwriteFX(menuX, 0, Images::Menu, ((menuSelect + (game.getUndoCount() == 0 ? 2 : 0)) * 3) + currentPlane);
+    if (puff.getCounter() > 0 && puff.getCounter() < 9) {
+        SpritesU::drawPlusMaskFX((puff.getX() * 8) - Constants::XOffset_Pixels - 13, (puff.getY() * 8) - game.getWorld_Y_Offset() - Constants::YOffset_Pixels - 13, Images::Puff, ((puff.getCounter() - 1) * 3) + currentPlane);
+    }
+
+    if (popoutMenu.getX() < 128) {
+        SpritesU::drawOverwriteFX(popoutMenu.getX(), 0, Images::Menu, ((popoutMenu.getSelect() + (game.getUndoCount() == 0 ? 2 : 0)) * 3) + currentPlane);
     }
 
 

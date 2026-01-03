@@ -13,6 +13,9 @@
 #include "fxdata/images/Images.h"
 #include "src/utils/Random.h"
 #include "src/entities/Cookie.h"
+#include "src/entities/Puff.h"
+#include "src/entities/LevelSelect.h"
+#include "src/entities/PopoutMenu.h"
 
 #define SPRITESU_OVERWRITE
 #define SPRITESU_PLUSMASK
@@ -35,9 +38,8 @@ GameState prevGameState = GameState::SplashScreen_Start;
 
 uint8_t titleCounter = 0;
 LevelSelect levelSelect;
-uint8_t menuX = 128;
-uint8_t menuSelect = 0;
-Direction menuDirection = Direction::None;
+PopoutMenu popoutMenu;
+Puff puff;
 
 void setup() {
 

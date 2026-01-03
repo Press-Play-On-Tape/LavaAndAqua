@@ -5,6 +5,29 @@
 #include "fxdata/fxdata.h"
 #include "src/utils/SpritesU.hpp"
 
+void updateBlocks() {
+
+    for (uint8_t i = 0; i < Constants::Block_Count; i++) {
+
+        Block &block = game.getBlock(i);
+        block.updateNext();
+
+    }
+
+}
+
+void clearBlocks() {
+
+    for (uint8_t i = 0; i < Constants::Block_Count; i++) {
+
+        Block &block = game.getBlock(i);
+        block.setX_Next(15);
+        block.setY_Next(15);
+
+    }
+
+}
+
 uint8_t getJustPressedButtons() {
 
     a.pollButtons();
@@ -73,11 +96,11 @@ bool isWalkable(ObjectType objectType, uint8_t x, uint8_t y, int8_t xOffset, int
                 
                     if (isWalkable(ObjectType::Block, block.getX(), block.getY(), xOffset, yOffset)) {
 
-                        block.setX(block.getX() + xOffset);
-                        block.setY(block.getY() + yOffset);
+                        block.setX_Next(block.getX() + xOffset);
+                        block.setY_Next(block.getY() + yOffset);
 
-                        if (game.getMapData(block.getX(), block.getY()) == Constants::Tile_Lava) {
-                            game.setMapData(block.getX(), block.getY(), 0);
+                        if (game.getMapData(block.getX() + xOffset, block.getY() + yOffset) == Constants::Tile_Lava) {
+                            game.setMapData(block.getX() + xOffset, block.getY() + yOffset, 0);
                         }
 
                         return true;
@@ -213,19 +236,11 @@ bool isWalkable(ObjectType objectType, uint8_t x, uint8_t y, int8_t xOffset, int
                 if (!block.isActive()) break;
                 
                 if (block.getX() == game.getPlayer().getX() + (2 * xOffset) && block.getY() == game.getPlayer().getY() + (2 * yOffset)) {
-                    // Serial.println("Push second");
-                
-                    // if (isWalkable(ObjectType::Block, block.getX(), block.getY(), xOffset, yOffset)) {
-                    //     block.setX(block.getX() + xOffset);
-                    //     block.setY(block.getY() + yOffset);
-                    //     return true;
-                    
-                    // }
-                    // else {
-                        return false;
-                    // }
+
+                    return false;
 
                 }
+
 
                 // Is the block blocked by a green door?
 
@@ -255,12 +270,15 @@ bool isWalkable(ObjectType objectType, uint8_t x, uint8_t y, int8_t xOffset, int
 
 bool isLava(uint8_t x, uint8_t y) {
 
-    return game.getMapData(x, y) != 0;
+    uint8_t tile = game.getMapData(x, y);
+
+    return tile == Constants::Tile_Lava;
     
 }
 
-void incLavaAndWater() {
+bool incLavaAndWater() {
 
+    
     // Water first ..
 
     for (uint8_t y = 1; y < Constants::Map_Y_Count - 1; y++) {
@@ -268,12 +286,13 @@ void incLavaAndWater() {
         for (uint8_t x = 1; x < Constants::Map_X_Count - 1; x++) {
 
             uint8_t mp00 = game.getMapData(x, y);
-            uint8_t mpN0 = game.getMapData(x - 1, y);
-            uint8_t mpP0 = game.getMapData(x + 1, y);
-            uint8_t mp0N = game.getMapData(x, y - 1);
-            uint8_t mp0P = game.getMapData(x, y + 1);
 
             if (mp00 == Constants::Tile_Water || mp00 == Constants::Tile_Water_And_Partial_Wall) {
+
+                uint8_t mpN0 = game.getMapData(x - 1, y);
+                uint8_t mpP0 = game.getMapData(x + 1, y);
+                uint8_t mp0N = game.getMapData(x, y - 1);
+                uint8_t mp0P = game.getMapData(x, y + 1);
 
                 if (mpN0 == Constants::Tile_Lava)      { game.setMapData(x - 1, y, Constants::Tile_Basalt);     mpN0 = Constants::Tile_Basalt; }
                 if (mpP0 == Constants::Tile_Lava)      { game.setMapData(x + 1, y, Constants::Tile_Basalt);     mpP0 = Constants::Tile_Basalt; }
@@ -332,13 +351,13 @@ void incLavaAndWater() {
             if (mp00 == Constants::Temp_Water)                     { game.setMapData(x, y, Constants::Tile_Water);                  mp00 = Constants::Tile_Water; }
             if (mp00 == Constants::Temp_Water_And_Partial_Wall)    { game.setMapData(x, y, Constants::Tile_Water_And_Partial_Wall); mp00 = Constants::Tile_Water_And_Partial_Wall; }
 
-            uint8_t mpN0 = game.getMapData(x - 1, y);
-            uint8_t mpP0 = game.getMapData(x + 1, y);
-            uint8_t mp0N = game.getMapData(x, y - 1);
-            uint8_t mp0P = game.getMapData(x, y + 1);
-
             if (mp00 == Constants::Tile_Lava || mp00 == Constants::Tile_Lava_And_Partial_Wall) {
 
+                uint8_t mpN0 = game.getMapData(x - 1, y);
+                uint8_t mpP0 = game.getMapData(x + 1, y);
+                uint8_t mp0N = game.getMapData(x, y - 1);
+                uint8_t mp0P = game.getMapData(x, y + 1);
+                
                 if (mpN0 == Constants::Tile_Water)      { game.setMapData(x - 1, y, Constants::Tile_Basalt);     mpN0 = Constants::Tile_Basalt; }
                 if (mpP0 == Constants::Tile_Water)      { game.setMapData(x + 1, y, Constants::Tile_Basalt);     mpP0 = Constants::Tile_Basalt; }
                 if (mp0N == Constants::Tile_Water)      { game.setMapData(x, y - 1, Constants::Tile_Basalt);     mp0N = Constants::Tile_Basalt; }
@@ -415,22 +434,24 @@ void incLavaAndWater() {
 
 void fix_World_Y_Offset() {
 
+    if (game.getPreventScrolling()) return;
+
     switch (game.getPlayer().getY()) {
     
-        case 0 ... 3:
+        case 1 ... 3:
             game.setWorld_Y_Offset(0);
             break;
 
         case 4:
-            game.setWorld_Y_Offset(1);
+            game.setWorld_Y_Offset(4);
             break;
 
         case 5:
-            game.setWorld_Y_Offset(2);
+            game.setWorld_Y_Offset(8);
             break;
 
         case 6 ... 9:
-            game.setWorld_Y_Offset(3);
+            game.setWorld_Y_Offset(12);
             break;
 
 
@@ -479,8 +500,8 @@ void cookieReset() {
 
     for (uint8_t i = 0; i < 40; i++) {
 
-        // if (i == 0) {
-        if (i < 22) { //SJH
+        if (i == 0) { //SJH
+        // if (i < 22) { //SJH
             game.getPuzzle(i).setStatus(PuzzleStatus::InProgress);
             game.getPuzzle(i).setNumberOfMoves(0);
         }
@@ -491,7 +512,7 @@ void cookieReset() {
 
     }
     
-    levelSelect.x = 0;
-    levelSelect.y = 0;
+    levelSelect.setX(0);
+    levelSelect.setY(0);
 
 }

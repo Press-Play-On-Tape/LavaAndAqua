@@ -1,32 +1,5 @@
 #pragma once
 
-
-struct LevelSelect {
-
-    uint8_t selectedPuzzle = 0;
-    uint8_t x = 0;
-    uint8_t y = 0;
-    uint8_t aCounter = 0;
-    uint8_t bCounter = 0;
-
-    uint8_t getSelectedPuzzle() {
-
-        return (this->y * 4) + this->x;
-        
-    }
-
-    void increaseGame() {
-
-        this->x++;
-        if (this->x == 5) {
-            this->x = 0;
-            this->y++;
-        }
-
-    }
-
-};
-
 enum PuzzleStatus : uint8_t { 
     Locked,
     Complete,
@@ -58,8 +31,8 @@ enum class GameState : uint8_t {
 
     Play_Init,
     Play_Start,
-        Play_Shuffle = Play_Start,
-        Play_Deal_00, 
+        Play = Play_Start,
+        Play_Dead, 
         RestartGame,
     Play_End,
     
