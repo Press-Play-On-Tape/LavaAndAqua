@@ -12,12 +12,9 @@
 
 struct Game {
 
-    public:
-
-        uint8_t mapData[9][14];
-    
     private:
 
+        uint8_t mapData[9][14];
         uint8_t prevMapData[Constants::Undo_Count][9][14];
         uint8_t level = 0;
         uint8_t portalKeyCount = 0;
