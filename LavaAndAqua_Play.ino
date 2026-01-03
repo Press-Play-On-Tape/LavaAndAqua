@@ -4,11 +4,10 @@
 
 void play_Init() { 
 
-    // game.resetFrameCount();
     game.setMoveCount(0);
     gameState = GameState::Play_Shuffle;
 
-    loadMap(game.getLevel());
+    game.loadMap(game.getLevel());
     menuSelect = 0;
     menuX = 128;
     menuDirection = Direction::None;
@@ -245,43 +244,43 @@ void play(ArduboyGBase_Config<ABG_Mode::L4_Triplane> &a) {
 
             if (xPos + 8 > menuX) continue;
 
-            if (game.mapData[y][x] >= Constants::Tile_Counter_00 && game.mapData[y][x] <= Constants::Tile_Counter_65) {
+            if (game.getMapData(x, y) >= Constants::Tile_Counter_00 && game.getMapData(x, y) <= Constants::Tile_Counter_65) {
 
-                SpritesU::drawOverwriteFX(xPos, yPos, Images::Numbers_5x3_2D_WB, ((game.mapData[y][x] - Constants::Tile_Counter_00) * 3) + currentPlane);
+                SpritesU::drawOverwriteFX(xPos, yPos, Images::Numbers_5x3_2D_WB, ((game.getMapData(x, y) - Constants::Tile_Counter_00) * 3) + currentPlane);
 
             }
-            else if (game.mapData[y][x] == Constants::Tile_Waters_Edge) {
+            else if (game.getMapData(x, y) == Constants::Tile_Waters_Edge) {
 
                 SpritesU::drawPlusMaskFX(xPos, yPos, Images::Tiles, (Constants::Image_Waters_Edge * 3) + currentPlane);
 
             }
-            else if (game.mapData[y][x] == Constants::Tile_Green_Switch) {
+            else if (game.getMapData(x, y) == Constants::Tile_Green_Switch) {
 
                 SpritesU::drawPlusMaskFX(xPos, yPos, Images::Tiles, (Constants::Image_Green_Switch * 3) + currentPlane);
 
             }
-            else if (game.mapData[y][x] == Constants::Tile_Partial_Wall) {
+            else if (game.getMapData(x, y) == Constants::Tile_Partial_Wall) {
 
                 SpritesU::drawPlusMaskFX(xPos, yPos, Images::Tiles, (Constants::Image_Partial_Wall * 3) + currentPlane);
 
             }
-            else if (game.mapData[y][x] == Constants::Tile_Lava_And_Partial_Wall) {
+            else if (game.getMapData(x, y) == Constants::Tile_Lava_And_Partial_Wall) {
 
                 SpritesU::drawPlusMaskFX(xPos, yPos, Images::Tiles, ((Constants::Image_Lava_And_Partial_Wall + ((game.getFrameCount() % 32) / 8)) * 3) + currentPlane);
 
             }
-            else if (game.mapData[y][x] == Constants::Tile_Water_And_Partial_Wall) {
+            else if (game.getMapData(x, y) == Constants::Tile_Water_And_Partial_Wall) {
 
                 SpritesU::drawPlusMaskFX(xPos, yPos, Images::Tiles, ((Constants::Image_Water_And_Partial_Wall + ((game.getFrameCount() % 32) / 8)) * 3) + currentPlane);
 
             }
-            else if (game.mapData[y][x] == Constants::Tile_Lava) {
+            else if (game.getMapData(x, y) == Constants::Tile_Lava) {
 
                 uint8_t len = 1;
 
                 for (uint8_t i = 1; i < 8; i++) {
 
-                    if (game.mapData[y][x + i] == Constants::Tile_Lava) {
+                    if (game.getMapData(x + i, y) == Constants::Tile_Lava) {
                         len = i + 1;
                     }
                     else {
@@ -298,13 +297,13 @@ void play(ArduboyGBase_Config<ABG_Mode::L4_Triplane> &a) {
 
             }
 
-            else if (game.mapData[y][x] == Constants::Tile_Water) {
+            else if (game.getMapData(x, y) == Constants::Tile_Water) {
 
                 uint8_t len = 1;
 
                 for (uint8_t i = 1; i < 8; i++) {
 
-                    if (game.mapData[y][x + i] == Constants::Tile_Water) {
+                    if (game.getMapData(x + i, y) == Constants::Tile_Water) {
                         len = i + 1;
                     }
                     else {
@@ -321,7 +320,7 @@ void play(ArduboyGBase_Config<ABG_Mode::L4_Triplane> &a) {
 
             }
 
-            if (game.mapData[y][x] == Constants::Tile_Basalt) {
+            if (game.getMapData(x, y) == Constants::Tile_Basalt) {
 
                 SpritesU::drawPlusMaskFX(xPos, yPos, Images::Tiles, (Constants::Image_Basalt * 3) + currentPlane);
 
@@ -368,7 +367,7 @@ void play(ArduboyGBase_Config<ABG_Mode::L4_Triplane> &a) {
 
         GreenDoor &greenDoor = game.getGreenDoor(i);
 
-        if (game.mapData[greenDoor.getY()][greenDoor.getX()] != Constants::Tile_Basalt) {
+        if (game.getMapData(greenDoor.getX(), greenDoor.getY()) != Constants::Tile_Basalt) {
 
             if (greenDoor.isActive()) {
 

@@ -12,12 +12,10 @@
 
 struct Game {
 
-    public:
+    private:
 
         uint8_t mapData[11][16];
         uint8_t prevMapData[Constants::Undo_Count][11][16];
-
-    private:
 
         uint8_t level = 0;
         uint8_t portalKeyCount = 0;
@@ -56,6 +54,16 @@ struct Game {
         void setWorld_Y_Offset(uint8_t val)             { this->world_Y_Offset = val; }
         void setLevel(uint8_t val)                      { this->level = val; }
         void setPortalKeyCount(uint8_t val)             { this->portalKeyCount = val; }
+
+        uint8_t getMapData(uint8_t x, uint8_t y) {
+        
+            return this->mapData[y][x];
+        }
+
+        void setMapData(uint8_t x, uint8_t y, uint8_t val) {
+        
+            this->mapData[y][x] = val;
+        }
 
         void resetLevel() {
         
@@ -115,7 +123,7 @@ struct Game {
 
                 for (uint8_t x = 0; x < Constants::Map_X_Count; x++) {
 
-                    this->prevMapData[Constants::Undo_Count - 1][y][x]= this->mapData[y][x];   
+                    this->prevMapData[Constants::Undo_Count - 1][y][x]= this->getMapData(x, y);   
 
                 }
 
@@ -215,5 +223,90 @@ struct Game {
 
         }
 
+        void loadMap(uint8_t level) {
+
+            uint8_t blockIdx = 0;
+            uint8_t portalKeyIdx = 0;
+            uint8_t greenDoorIdx = 0;
+
+            this->resetLevel();
+
+            // Load Map Data ..
+            {
+                uint24_t levelStart = FX::readIndexedUInt24(Levels::Levels, level);
+
+                for (uint8_t y = 0; y < Constants::Map_Y_Count; y++) {
+                        
+                    FX::seekDataArray(levelStart, y, 0, Constants::Map_X_Count);            
+                    FX::readObject(mapData[y]);
+                    FX::readEnd();
+
+                }
+
+
+                levelStart = FX::readIndexedUInt24(Levels::Level_Details, level);
+
+                FX::seekData(levelStart);
+                this->setWorld_Y_Offset(FX::readPendingUInt8());
+                this->getPlayer().setX(FX::readPendingUInt8());
+                this->getPlayer().setY(FX::readPendingUInt8());
+
+                FX::readEnd();
+
+
+                for (uint8_t y = 0; y < Constants::Map_Y_Count; y++) {
+
+                    for (uint8_t x = 0; x < Constants::Map_X_Count; x++) {
+                            
+                        if (this->getMapData(x, y) == Constants::Tile_Green_Closed) {
+
+                            this->getGreenDoor(greenDoorIdx).setX(x);
+                            this->getGreenDoor(greenDoorIdx).setY(y);
+                            this->setMapData(x, y, 0);
+                            greenDoorIdx++;
+
+                        }
+                        else if (this->getMapData(x, y) == Constants::Tile_Block) {
+                        
+                            this->getBlock(blockIdx).setX(x);
+                            this->getBlock(blockIdx).setY(y);
+                            this->setMapData(x, y, 0);
+                            blockIdx++;
+
+                        }
+                        else if (this->getMapData(x, y) == Constants::Tile_Portal) {
+                        
+                            this->getPortal().setX(x);
+                            this->getPortal().setY(y);
+                            this->getPortal().setOpen(true);
+                            this->setMapData(x, y, 0);
+
+                        }
+                        else if (this->getMapData(x, y) == Constants::Tile_Portal_Inactive) {
+                        
+                            this->getPortal().setX(x);
+                            this->getPortal().setY(y);
+                            this->getPortal().setOpen(false);
+                            this->setMapData(x, y, 0);
+
+                        }
+                        else if (this->getMapData(x, y) == Constants::Tile_Portal_Key) {
+                    
+                            this->getPortalKey(portalKeyIdx).setX(x);
+                            this->getPortalKey(portalKeyIdx).setY(y);
+                            this->setMapData(x, y, 0);
+                            portalKeyIdx++;
+
+                        }
+
+                    }
+                        
+                }
+
+            }
+
+            this->setPortalKeyCount(portalKeyIdx);
+
+        }
 
 };
