@@ -6,6 +6,7 @@ void play_Init() {
 
     game.setMoveCount(0);
     gameState = nextGameState; //GameState::Play;
+    titleCounter = 0;
 
     game.loadMap(game.getLevel());
     popoutMenu.setSelect(0);
@@ -134,7 +135,7 @@ void play_Update() {
 
                 if (game.getPortalKeyCount() == 0 && game.getPlayer().getX() == game.getPortal().getX() && game.getPlayer().getY() == game.getPortal().getY()) {
 
-                    game.setFrameCount(0);
+                    titleCounter = 0;
                 
                     game.getPuzzle(game.getLevel()).setStatus(PuzzleStatus::Complete);
                     game.getPuzzle(game.getLevel()).setNumberOfMoves(game.getMoveCount());
@@ -292,9 +293,10 @@ void play_Update() {
     }
     else {
     
-        // Fade Out / In
-        if (game.getFrameCount() == 6) {
+        titleCounter++;
 
+        // Fade Out / In
+        if (titleCounter == 42) {
 
             switch (nextGameState) {
             
@@ -316,7 +318,7 @@ void play_Update() {
                     break;
 
                 default:
-DEBUG_BREAK
+
                     gameState = nextGameState;
                     break;
 
@@ -336,7 +338,7 @@ void play(ArduboyGBase_Config<ABG_Mode::L4_Triplane> &a) {
     uint8_t currentPlane = a.currentPlane();
     if (a.needsUpdate()) { play_Update(); }
 
-    if ((gameState != GameState::Play_FadeOut && gameState != GameState::Play_FadeIn) || (game.getFrameCount() > 0 && game.getFrameCount() < 7)) {
+    //if ((gameState != GameState::Play_FadeOut && gameState != GameState::Play_FadeIn) || (game.getFrameCount() > 0 && game.getFrameCount() < 7)) {
 
         uint24_t levelIdx = FX::readIndexedUInt24(Images::Level_Images, game.getLevel());
         SpritesU::drawOverwriteFX(0, - game.getWorld_Y_Offset(), levelIdx, currentPlane);
@@ -536,28 +538,14 @@ void play(ArduboyGBase_Config<ABG_Mode::L4_Triplane> &a) {
 
         if (gameState == GameState::Play_FadeOut) {
 
-            switch (game.getFrameCount()) {
-            
-                case 1:
-                    SpritesU::drawPlusMaskFX(0, 0, Images::Fade_04, currentPlane);
-                    break;
-            
-                case 2:
-                    SpritesU::drawPlusMaskFX(0, 0, Images::Fade_03, currentPlane);
-                    break;
-            
-                case 3:
-                    SpritesU::drawPlusMaskFX(0, 0, Images::Fade_02, currentPlane);
-                    break;
-            
-                case 4:
-                    SpritesU::drawPlusMaskFX(0, 0, Images::Fade_01, currentPlane);
-                    break;
-            
-                case 5:
-                    SpritesU::drawPlusMaskFX(0, 0, Images::Fade_00, currentPlane);
-                    break;
-            
+            if (titleCounter < 42) {
+                SpritesU::drawPlusMaskFX(0, -64 + (titleCounter - 10) * 2, Images::Title_Top, currentPlane);
+                SpritesU::drawPlusMaskFX(0, 71 - (titleCounter - 10) * 2, Images::Title_Bottom, currentPlane);
+            }
+            else {
+                SpritesU::drawPlusMaskFX(0, -64 + 64, Images::Title_Top, currentPlane);
+                SpritesU::drawPlusMaskFX(0, 71 - 64, Images::Title_Bottom, currentPlane);
+
             }
 
         }
@@ -566,32 +554,16 @@ void play(ArduboyGBase_Config<ABG_Mode::L4_Triplane> &a) {
 
         if (gameState == GameState::Play_FadeIn) {
 
-            switch (game.getFrameCount()) {
-            
-                case 1:
-                    SpritesU::drawPlusMaskFX(0, 0, Images::Fade_00, currentPlane);
-                    break;
-            
-                case 2:
-                    SpritesU::drawPlusMaskFX(0, 0, Images::Fade_01, currentPlane);
-                    break;
-            
-                case 3:
-                    SpritesU::drawPlusMaskFX(0, 0, Images::Fade_02, currentPlane);
-                    break;
-            
-                case 4:
-                    SpritesU::drawPlusMaskFX(0, 0, Images::Fade_03, currentPlane);
-                    break;
-            
-                case 5:
-                    SpritesU::drawPlusMaskFX(0, 0, Images::Fade_04, currentPlane);
-                    break;
-            
+
+            if (titleCounter < 32) {
+
+                SpritesU::drawPlusMaskFX(0, - 20 - (titleCounter - 10) * 2, Images::Title_Top, currentPlane);
+                SpritesU::drawPlusMaskFX(0, 32 + (titleCounter - 10) * 2, Images::Title_Bottom, currentPlane);
+
             }
 
         }
 
-    }
+    //}
 
 }
