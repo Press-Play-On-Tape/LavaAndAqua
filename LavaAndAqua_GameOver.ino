@@ -66,15 +66,8 @@ void gameOver(ArduboyGBase_Config<ABG_Mode::L4_Triplane> &a) {
 
         case GameState::GameOver_Main:
 
-            // if (titleCounter < 42) {
-            //     SpritesU::drawPlusMaskFX(0, -64 + (titleCounter - 10) * 2, Images::Title_Top, currentPlane);
-            //     SpritesU::drawPlusMaskFX(0, 71 - (titleCounter - 10) * 2, Images::Title_Bottom, currentPlane);
-            // }
-            // else {
-                SpritesU::drawPlusMaskFX(0, -64 + 64, Images::Title_Top, currentPlane);
-                SpritesU::drawPlusMaskFX(0, 71 - 64, Images::Title_Bottom, currentPlane);
-
-            // }
+            SpritesU::drawPlusMaskFX(0, -64 + 64, Images::Title_Top, currentPlane);
+            SpritesU::drawPlusMaskFX(0, 71 - 64, Images::Title_Bottom, currentPlane);
 
             if (titleCounter >= 30 && titleCounter < 59) {
                 SpritesU::drawPlusMaskFX(Constants::xPos[titleCounter - 30], 11, Images::Title_Good, currentPlane);

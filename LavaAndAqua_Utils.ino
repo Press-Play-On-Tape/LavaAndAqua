@@ -513,21 +513,13 @@ void cookieReset() {
 
     for (uint8_t i = 0; i < 24; i++) {
 
-        // if (i == 0) { //SJH
+        if (i == 0) { //SJH
         // if (i < 23) { //SJH
-        //     game.getPuzzle(i).setStatus(PuzzleStatus::InProgress);
-        //     game.getPuzzle(i).setNumberOfMoves(0);
-        // }
-        // else {
-        //     game.getPuzzle(i).setStatus(PuzzleStatus::Locked);
-        //     game.getPuzzle(i).setNumberOfMoves(0);
-        // }
-        if (i > 1) { //SJH
-            game.getPuzzle(i).setStatus(PuzzleStatus::Complete);
+            game.getPuzzle(i).setStatus(PuzzleStatus::InProgress);
             game.getPuzzle(i).setNumberOfMoves(0);
         }
         else {
-            game.getPuzzle(i).setStatus(PuzzleStatus::InProgress);
+            game.getPuzzle(i).setStatus(PuzzleStatus::Locked);
             game.getPuzzle(i).setNumberOfMoves(0);
         }
 

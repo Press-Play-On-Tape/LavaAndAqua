@@ -131,12 +131,6 @@ convert_header(IMAGES + 'Extras/Levels_NumberOfMoves.png',                      
 convert_header(IMAGES + 'Extras/Levels_NumberOfMoves_Numbers.png',                  BASE + 'Images.hpp', 'Levels_NumberOfMoves_Numbers', 4, 5, 8)
 convert_header(IMAGES + 'Extras/Puff.png',                                          BASE + 'Images.hpp', 'Puff', 4, 32, 32)
 
-convert_header(IMAGES + 'Extras/Fade_00.png',                                       BASE + 'Images.hpp', 'Fade_00', 4)
-convert_header(IMAGES + 'Extras/Fade_01.png',                                       BASE + 'Images.hpp', 'Fade_01', 4)
-convert_header(IMAGES + 'Extras/Fade_02.png',                                       BASE + 'Images.hpp', 'Fade_02', 4)
-convert_header(IMAGES + 'Extras/Fade_03.png',                                       BASE + 'Images.hpp', 'Fade_03', 4)
-convert_header(IMAGES + 'Extras/Fade_04.png',                                       BASE + 'Images.hpp', 'Fade_04', 4)
-
 convert_header(IMAGES + 'HUD/Mini_HUD.png',                                         BASE + 'Images.hpp', 'Mini_HUD', 4)
 convert_header(IMAGES + 'HUD/Numbers_HUD.png',                                      BASE + 'Images.hpp', 'Numbers_HUD', 4, 8, 8)
 
@@ -149,6 +143,12 @@ convert_header(IMAGES + 'Tiles/Lava_05.png',                                    
 convert_header(IMAGES + 'Tiles/Lava_06.png',                                        BASE + 'Images.hpp', 'Lava_06', 4, 48, 8)
 convert_header(IMAGES + 'Tiles/Lava_07.png',                                        BASE + 'Images.hpp', 'Lava_07', 4, 56, 8)
 convert_header(IMAGES + 'Tiles/Lava_08.png',                                        BASE + 'Images.hpp', 'Lava_08', 4, 64, 8)
+convert_header(IMAGES + 'Tiles/Lava_09.png',                                        BASE + 'Images.hpp', 'Lava_09', 4, 64, 8)
+convert_header(IMAGES + 'Tiles/Lava_10.png',                                        BASE + 'Images.hpp', 'Lava_10', 4, 64, 8)
+convert_header(IMAGES + 'Tiles/Lava_11.png',                                        BASE + 'Images.hpp', 'Lava_11', 4, 64, 8)
+convert_header(IMAGES + 'Tiles/Lava_12.png',                                        BASE + 'Images.hpp', 'Lava_12', 4, 64, 8)
+convert_header(IMAGES + 'Tiles/Lava_13.png',                                        BASE + 'Images.hpp', 'Lava_13', 4, 64, 8)
+convert_header(IMAGES + 'Tiles/Lava_14.png',                                        BASE + 'Images.hpp', 'Lava_14', 4, 64, 8)
 
 convert_header(IMAGES + 'Tiles/Water_01.png',                                       BASE + 'Images.hpp', 'Water_01', 4, 8, 8)
 convert_header(IMAGES + 'Tiles/Water_02.png',                                       BASE + 'Images.hpp', 'Water_02', 4, 16, 8)
@@ -158,6 +158,13 @@ convert_header(IMAGES + 'Tiles/Water_05.png',                                   
 convert_header(IMAGES + 'Tiles/Water_06.png',                                       BASE + 'Images.hpp', 'Water_06', 4, 48, 8)
 convert_header(IMAGES + 'Tiles/Water_07.png',                                       BASE + 'Images.hpp', 'Water_07', 4, 56, 8)
 convert_header(IMAGES + 'Tiles/Water_08.png',                                       BASE + 'Images.hpp', 'Water_08', 4, 64, 8)
+convert_header(IMAGES + 'Tiles/Water_09.png',                                       BASE + 'Images.hpp', 'Water_09', 4, 64, 8)
+convert_header(IMAGES + 'Tiles/Water_10.png',                                       BASE + 'Images.hpp', 'Water_10', 4, 64, 8)
+convert_header(IMAGES + 'Tiles/Water_11.png',                                       BASE + 'Images.hpp', 'Water_11', 4, 64, 8)
+convert_header(IMAGES + 'Tiles/Water_12.png',                                       BASE + 'Images.hpp', 'Water_12', 4, 64, 8)
+convert_header(IMAGES + 'Tiles/Water_13.png',                                       BASE + 'Images.hpp', 'Water_13', 4, 64, 8)
+convert_header(IMAGES + 'Tiles/Water_14.png',                                       BASE + 'Images.hpp', 'Water_14', 4, 64, 8)
+
 convert_header(IMAGES + 'Numbers/Numbers_5x3_2D_WB.png',                            BASE + 'Images.hpp', 'Numbers_5x3_2D_WB', 4, 8, 8)
 
 convert_header(IMAGES + 'Levels/Level_00.png',                                      BASE + 'Images.hpp', 'Level_Img_00', 4)

@@ -45,6 +45,12 @@ namespace Images
         Lava_06,
         Lava_07,
         Lava_08,
+        Lava_09,
+        Lava_10,
+        Lava_11,
+        Lava_12,
+        Lava_13,
+        Lava_14,
     };
 
     uint24_t Waters[] = {
@@ -56,6 +62,12 @@ namespace Images
         Water_06,
         Water_07,
         Water_08,
+        Water_09,
+        Water_10,
+        Water_11,
+        Water_12,
+        Water_13,
+        Water_14,
     };
 
 namespace_end
