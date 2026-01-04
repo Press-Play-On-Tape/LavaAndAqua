@@ -298,7 +298,7 @@ void play_Update() {
         if (titleCounter == 43) {
 
             titleCounter = 0;
-            
+
             switch (nextGameState) {
             
                 case GameState::Play_FadeIn:
@@ -345,7 +345,7 @@ void play(ArduboyGBase_Config<ABG_Mode::L4_Triplane> &a) {
     SpritesU::drawOverwriteFX(121, 17, Images::Numbers_HUD, ((game.getLevel() + 1) * 3) + currentPlane);
     SpritesU::drawOverwriteFX(121, 50, Images::Numbers_HUD, ((game.getMoveCount() / 10) * 3) + currentPlane);
     SpritesU::drawOverwriteFX(121, 54, Images::Numbers_HUD, ((game.getMoveCount() % 100) * 3) + currentPlane);
-    
+   Serial.println("------"); 
     for (uint8_t y = 0; y < Constants::Map_Y_Count; y++) {
 
         int8_t yPos = (y * 8) - game.getWorld_Y_Offset() - Constants::YOffset_Pixels;
@@ -427,7 +427,7 @@ void play(ArduboyGBase_Config<ABG_Mode::L4_Triplane> &a) {
                     }
 
                 }
-
+Serial.println(len);
                 uint24_t imgIdx = FX::readIndexedUInt24(Images::Waters, len - 1);
                 SpritesU::drawOverwriteFX(xPos, yPos, imgIdx, (((game.getFrameCount() % 32) / 8) * 3) + currentPlane);
 
