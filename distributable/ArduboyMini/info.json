@@ -2,10 +2,10 @@
   "schemaVersion": 3,
   "binaries": [
     {
-      "title": "Scoundrel",
-      "filename": "Scoundrel-Mini.hex",
-      "flashdata": "Scoundrel-Mini-data.bin",
-      "flashsave": "Scoundrel-Mini-save.bin",
+      "title": "Lava And Aqua",
+      "filename": "LavaAndAqua-Mini.hex",
+      "flashdata": "LavaAndAqua-Mini-data.bin",
+      "flashsave": "LavaAndAqua-Mini-save.bin",
       "device": "ArduboyMini"
     }
   ]
