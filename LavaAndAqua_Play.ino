@@ -1,7 +1,7 @@
 #include <ArduboyFX.h>  
 #include "fxdata/fxdata.h"
 
-bool debug = false;
+// bool debug = false;
 
 void play_Init() { 
 
@@ -309,7 +309,7 @@ void play_Update() {
                         game.getPuzzle(game.getLevel() + 1).setStatus(PuzzleStatus::InProgress);
                         game.setLevel(game.getLevel() + 1);
                         levelSelect.increaseGame();
-                        debug = true;
+                        // debug = true;
                     }
                     else {
                     
